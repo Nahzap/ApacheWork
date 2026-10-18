@@ -1,0 +1,52 @@
+[
+  {
+    "scope": "Condados de EE.UU.",
+    "units": 3142,
+    "q4_strike_share": 0.1900709325276529,
+    "q4_area_share": 0.13162725305231546,
+    "q4_household_share": 0.7899984705603923,
+    "above_median_strike_share": 0.3941439575353569,
+    "above_median_area_share": 0.28768954436635175,
+    "spearman_density": -0.01063447096572323
+  },
+  {
+    "scope": "Tractos de Texas, Oklahoma y Kansas",
+    "units": 6794,
+    "q4_strike_share": 0.0052633431368511495,
+    "q4_area_share": 0.003629596348351457,
+    "q4_household_share": 0.27145892573491304,
+    "above_median_strike_share": 0.014855474275458606,
+    "above_median_area_share": 0.010453229021978372,
+    "spearman_density": -0.24872895837063755
+  },
+  {
+    "scope": "Tractos de Texas",
+    "units": 5026,
+    "q4_strike_share": 0.0060517291374803375,
+    "q4_area_share": 0.004080820727926902,
+    "q4_household_share": 0.2643820528818472,
+    "above_median_strike_share": 0.017314716862556635,
+    "above_median_area_share": 0.011616984128743343,
+    "spearman_density": -0.2606232105145624
+  },
+  {
+    "scope": "Tractos de Oklahoma",
+    "units": 1018,
+    "q4_strike_share": 0.00612376310031996,
+    "q4_area_share": 0.003261698597796963,
+    "q4_household_share": 0.25775672007222655,
+    "above_median_strike_share": 0.020838436603635265,
+    "above_median_area_share": 0.013585966268020543,
+    "spearman_density": -0.15018502578517068
+  },
+  {
+    "scope": "Tractos de Kansas",
+    "units": 750,
+    "q4_strike_share": 0.002454134403710131,
+    "q4_area_share": 0.0022105540362340427,
+    "q4_household_share": 0.274315453034178,
+    "above_median_strike_share": 0.00792505195735066,
+    "above_median_area_share": 0.0075516339880250215,
+    "spearman_density": -0.15415729749975643
+  }
+]
