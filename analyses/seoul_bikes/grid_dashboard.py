@@ -17,15 +17,15 @@ from matplotlib.colors import LinearSegmentedColormap
 BASE = os.environ.get("SUPERSET_URL", "http://127.0.0.1:8088")
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "outputs"
-PNG = OUT / "ejercicio_1_oficial.png"
+PNG = OUT / "maintenance_2018.png"
 OPENER = urllib.request.build_opener(urllib.request.HTTPCookieProcessor())
 
-DASHBOARD_TITLE = "Seoul: horarios de mantenimiento de bicicletas (2018)"
+DASHBOARD_TITLE = "Seoul: weekday bike-maintenance hours (2018)"
 BAR_TITLE = "Seoul Average Bike Rentals per Hour on Weekdays in 2018"
 SEASON_TITLE = "Seasonal Seoul Average Bike Rentals per Hour on Weekdays in 2018"
-HOUR_TITLE = "Hora a hora: días hábiles de 2018"
-WEEK_TITLE = "Semana a semana: 8 a.m., 10 a.m. y 5 p.m."
-DAY_TITLE = "Jornada a jornada: 8 a.m., 10 a.m. y 5 p.m."
+HOUR_TITLE = "Hour by hour: weekdays in 2018"
+WEEK_TITLE = "Week by week: 8 a.m., 10 a.m., and 5 p.m."
+DAY_TITLE = "Day by day: 8 a.m., 10 a.m., and 5 p.m."
 
 INK = "#1c1c1c"
 MUTED = "#5e5e5e"
@@ -39,11 +39,11 @@ PURPLE = "#B279A2"
 NEUTRAL = "#8b93a7"
 
 WEEKDAYS = (
-    ("monday", "Lunes", BLUE),
-    ("tuesday", "Martes", ORANGE),
-    ("wednesday", "Miércoles", GREEN),
-    ("thursday", "Jueves", RED),
-    ("friday", "Viernes", PURPLE),
+    ("monday", "Monday", BLUE),
+    ("tuesday", "Tuesday", ORANGE),
+    ("wednesday", "Wednesday", GREEN),
+    ("thursday", "Thursday", RED),
+    ("friday", "Friday", PURPLE),
 )
 HOURS = (
     ("avg_8am", "8 a.m.", ORANGE),
@@ -98,7 +98,7 @@ def draw_bars(ax, hour_avg):
             colors.append(NEUTRAL)
     bars = ax.bar(labels, values, color=colors, width=0.72, zorder=3)
     ax.set_ylim(0, 1650)
-    ax.set_ylabel("Promedio", color=MUTED, fontsize=9)
+    ax.set_ylabel("Average", color=MUTED, fontsize=9)
     for bar, value, color in zip(bars, values, colors):
         if color == NEUTRAL:
             continue
@@ -112,7 +112,7 @@ def draw_bars(ax, hour_avg):
             color=INK,
         )
     style_axis(ax)
-    panel_title(ax, "Promedio de 8 a.m. a 5 p.m.")
+    panel_title(ax, "Average from 8 a.m. to 5 p.m.")
     ax.tick_params(axis="x", labelrotation=0)
     for label in ax.get_xticklabels():
         label.set_fontsize(8)
@@ -124,10 +124,10 @@ def draw_hours(ax, hour_week):
     ax.set_xlim(0, 23)
     ax.set_ylim(0, 2100)
     ax.set_xticks(range(0, 24, 2))
-    ax.set_ylabel("Promedio", color=MUTED, fontsize=9)
-    ax.set_xlabel("Hora", color=MUTED, fontsize=9)
+    ax.set_ylabel("Average", color=MUTED, fontsize=9)
+    ax.set_xlabel("Hour", color=MUTED, fontsize=9)
     style_axis(ax)
-    panel_title(ax, "Hora a hora, lunes a viernes")
+    panel_title(ax, "Hour by hour, Monday to Friday")
     ax.legend(
         ncol=5,
         frameon=False,
@@ -149,10 +149,10 @@ def draw_weeks(ax, week):
     ticks = list(range(0, len(week), step))
     ax.set_xticks(ticks)
     ax.set_xticklabels([week["week_label"].iloc[i].replace("2018-", "") for i in ticks], fontsize=8)
-    ax.set_ylabel("Promedio", color=MUTED, fontsize=9)
-    ax.set_xlabel("Semana ISO", color=MUTED, fontsize=9)
+    ax.set_ylabel("Average", color=MUTED, fontsize=9)
+    ax.set_xlabel("ISO week", color=MUTED, fontsize=9)
     style_axis(ax)
-    panel_title(ax, "Semana a semana")
+    panel_title(ax, "Week by week")
     ax.legend(
         ncol=3,
         frameon=False,
@@ -188,7 +188,7 @@ def draw_season(ax, season):
             tone = "white" if value > limit * 0.62 else INK
             ax.text(col, row, f"{value:,.0f}", ha="center", va="center", fontsize=7, color=tone)
     ax.set_frame_on(False)
-    panel_title(ax, "Por estación")
+    panel_title(ax, "By season")
     colorbar = ax.figure.colorbar(image, ax=ax, fraction=0.046, pad=0.03)
     colorbar.outline.set_visible(False)
     colorbar.ax.tick_params(labelsize=8, length=0, colors=MUTED)
@@ -200,18 +200,18 @@ def draw_days(ax, day):
     ax.plot(day["bikes_5pm"], color=RED, linewidth=1.15, label="5 p.m.", zorder=3)
     ax.set_ylim(0, max(day[["bikes_8am", "bikes_10am", "bikes_5pm"]].max()) * 1.12)
     months = []
-    for index, label in enumerate(day["jornada"]):
+    for index, label in enumerate(day["workday"]):
         if label.endswith("01") or "-01-" in label[:8] and label[8:10] == "01":
             months.append(index)
     if not months:
         months = list(range(0, len(day), 20))
-    ticks = [index for index, label in enumerate(day["jornada"]) if label[8:10] == "01"]
+    ticks = [index for index, label in enumerate(day["workday"]) if label[8:10] == "01"]
     ax.set_xticks(ticks)
-    ax.set_xticklabels([day["jornada"].iloc[i][:7] for i in ticks], fontsize=8)
+    ax.set_xticklabels([day["workday"].iloc[i][:7] for i in ticks], fontsize=8)
     ax.set_xlim(0, len(day) - 1)
-    ax.set_ylabel("Bicicletas", color=MUTED, fontsize=9)
+    ax.set_ylabel("Bikes", color=MUTED, fontsize=9)
     style_axis(ax)
-    panel_title(ax, "Jornada a jornada")
+    panel_title(ax, "Day by day")
     ax.legend(
         ncol=3,
         frameon=False,
@@ -244,7 +244,7 @@ def render(path=PNG):
     draw_days(axes[4], day)
     lowest = float(hour_avg.loc[hour_avg["hour_label"].str.contains("10 a.m."), "avg_rentals"].iloc[0])
     figure.suptitle(
-        "Seúl 2018 · días hábiles · mantenimiento",
+        "Seoul 2018 · weekdays · maintenance",
         fontsize=18,
         color=INK,
         x=0.055,
@@ -254,8 +254,8 @@ def render(path=PNG):
     figure.text(
         0.055,
         0.935,
-        f"En la ventana de 8 a.m. a 5 p.m. el promedio más bajo es las 10 a.m. ({lowest:,.0f} bicicletas). "
-        "En las barras y en las líneas, esa hora va en azul.",
+        f"From 8 a.m. to 5 p.m. the lowest average is 10 a.m. ({lowest:,.0f} bikes). "
+        "That hour is blue in the bars and in the lines.",
         fontsize=10,
         color=MUTED,
         ha="left",
@@ -327,9 +327,9 @@ def publish_grid():
         raise SystemExit("missing charts: " + ", ".join(missing))
 
     tune_bar(found[BAR_TITLE], token, csrf)
-    tune_line(found[HOUR_TITLE], token, csrf, "Hora")
-    tune_line(found[WEEK_TITLE], token, csrf, "Semana")
-    tune_line(found[DAY_TITLE], token, csrf, "Jornada")
+    tune_line(found[HOUR_TITLE], token, csrf, "Hour")
+    tune_line(found[WEEK_TITLE], token, csrf, "Week")
+    tune_line(found[DAY_TITLE], token, csrf, "Day")
     tune_heatmap(found[SEASON_TITLE], token, csrf)
 
     rows = (
@@ -372,11 +372,11 @@ def publish_grid():
     label_colors = dict(metadata.get("label_colors") or {})
     label_colors.update(
         {
-            "Lunes": BLUE,
-            "Martes": ORANGE,
-            "Miércoles": GREEN,
-            "Jueves": RED,
-            "Viernes": PURPLE,
+            "Monday": BLUE,
+            "Tuesday": ORANGE,
+            "Wednesday": GREEN,
+            "Thursday": RED,
+            "Friday": PURPLE,
             "8 a.m.": ORANGE,
             "10 a.m.": BLUE,
             "5 p.m.": RED,
@@ -433,7 +433,7 @@ def tune_bar(detail, token, csrf):
             "truncate_y_axis": False,
             "truncateXAxis": False,
             "y_axis_bounds": [0, 1700],
-            "y_axis_title": "Bicicletas",
+            "y_axis_title": "Bikes",
             "y_axis_title_margin": 12,
             "x_axis_title": "",
             "xAxisLabelRotation": 0,
@@ -447,7 +447,7 @@ def tune_line(detail, token, csrf, x_title):
     params = json.loads(detail["params"])
     params.update(
         {
-            "y_axis_title": "Bicicletas",
+            "y_axis_title": "Bikes",
             "y_axis_title_margin": 36,
             "x_axis_title": x_title,
             "xAxisLabelRotation": 0,

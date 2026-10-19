@@ -32,7 +32,7 @@ CSV_SRC = Path(os.environ.get(
 OUT = ROOT / "outputs"
 FIG = ROOT / "figures"
 CENSUS = OUT / "census"
-DASHBOARD_TITLE = "Historia: rayos en Estados Unidos, 2009-2018"
+DASHBOARD_TITLE = "Lightning history: United States, 2009-2018"
 OPENER = urllib.request.build_opener(urllib.request.HTTPCookieProcessor())
 SEQ = "https://www2.census.gov/programs-surveys/acs/summary_file/2018/data/5_year_seq_by_state"
 TIGER = "https://www2.census.gov/geo/tiger/GENZ2018/shp"
@@ -440,7 +440,7 @@ def quartile_table(frame, scope):
     valid["quartile"] = pd.qcut(
         valid["household_density"],
         4,
-        labels=["Q1 menos denso", "Q2", "Q3", "Q4 más denso"],
+        labels=["Q1 least dense", "Q2", "Q3", "Q4 most dense"],
     )
     grouped = valid.groupby("quartile", observed=True)[["strikes", "households", "area_km2"]].sum()
     grouped = grouped.reset_index()
@@ -451,8 +451,8 @@ def quartile_table(frame, scope):
     grouped["strike_share"] = grouped["strikes"] / total_strikes
     grouped["household_share"] = grouped["households"] / total_households
     grouped["area_share"] = grouped["area_km2"] / total_area
-    dense = valid[valid["quartile"] == "Q4 más denso"]
-    above = valid[valid["quartile"].isin(["Q3", "Q4 más denso"])]
+    dense = valid[valid["quartile"].isin(["Q4 most dense", "Q4 más denso"])]
+    above = valid[valid["quartile"].isin(["Q3", "Q4 most dense", "Q4 más denso"])]
     summary = {
         "scope": scope,
         "units": int(len(valid)),
@@ -471,6 +471,19 @@ def quartile_table(frame, scope):
 def draw(counties, tracts, quartile):
     OUT.mkdir(parents=True, exist_ok=True)
     FIG.mkdir(parents=True, exist_ok=True)
+    quartile = quartile.copy()
+    quartile["scope"] = quartile["scope"].replace(
+        {
+            "Condados de EE.UU.": "U.S. counties",
+            "Tractos de Texas, Oklahoma y Kansas": "Tracts in Texas, Oklahoma, and Kansas",
+            "Tractos de Texas": "Texas tracts",
+            "Tractos de Oklahoma": "Oklahoma tracts",
+            "Tractos de Kansas": "Kansas tracts",
+        }
+    )
+    quartile["quartile"] = quartile["quartile"].replace(
+        {"Q1 menos denso": "Q1 least dense", "Q4 más denso": "Q4 most dense"}
+    )
     sns.set_theme(style="whitegrid", context="talk")
     sample = counties[(counties["area_km2"] > 1) & (counties["households"] > 0)].copy()
     sample["strikes_per_km2"] = sample["strikes"] / sample["area_km2"]
@@ -486,21 +499,21 @@ def draw(counties, tracts, quartile):
     )
     axis.set_xscale("log")
     axis.set_yscale("log")
-    axis.set_xlabel("Hogares por km²")
-    axis.set_ylabel("Rayos por km² en 2018")
-    axis.set_title("Condados: densidad de hogares y densidad de rayos")
+    axis.set_xlabel("Households per km²")
+    axis.set_ylabel("Strikes per km² in 2018")
+    axis.set_title("Counties: household density and strike density")
     figure.tight_layout()
-    figure.savefig(FIG / "05_hogares_condados.png", dpi=140)
+    figure.savefig(FIG / "05_households_counties.png", dpi=140)
     plt.close(figure)
 
     figure, axis = plt.subplots(figsize=(11, 6))
     sns.barplot(data=quartile, x="quartile", y="strike_share", hue="scope", ax=axis)
     axis.yaxis.set_major_formatter(plt.FuncFormatter(lambda value, _: f"{value:.0%}"))
-    axis.set_xlabel("Cuartil de hogares por km²")
-    axis.set_ylabel("Parte de los rayos de 2018")
-    axis.set_title("¿Caen los rayos en las zonas con más hogares por km²?")
+    axis.set_xlabel("Households per km², by quartile")
+    axis.set_ylabel("Share of 2018 strikes")
+    axis.set_title("Do strikes fall where households per km² are highest?")
     figure.tight_layout()
-    figure.savefig(FIG / "06_cuartiles_hogares.png", dpi=140)
+    figure.savefig(FIG / "06_household_quartiles.png", dpi=140)
     plt.close(figure)
 
 
@@ -607,11 +620,14 @@ def publish(counties, tracts, quartile, summaries):
     dashboard_id = next(item["id"] for item in dashboards if item["dashboard_title"] == DASHBOARD_TITLE)
     charts = api("GET", "/api/v1/chart/?q=(page:0,page_size:300)", token=token)["result"]
     names = {
-        "Territorio: rayos por condado en 2018",
+        "2018 strikes by county",
+        "2018 households per km²",
         "Territorio: hogares por km² en 2018",
-        "Texas 2018 sobre el territorio",
-        "Oklahoma 2018 sobre el territorio",
-        "Kansas 2018 sobre el territorio",
+        "Texas 2018 on the territory",
+        "Oklahoma 2018 on the territory",
+        "Kansas 2018 on the territory",
+        "Strike share by household quartile, counties",
+        "Strike share by household quartile, three states",
         "Rayos por cuartil de hogares, condados",
         "Rayos por cuartil de hogares, tres estados",
     }
@@ -669,45 +685,45 @@ def publish(counties, tracts, quartile, summaries):
     chart_specs = [
         polygon_chart(
             county_id,
-            "Territorio: rayos por condado en 2018",
+            "2018 strikes by county",
             "strikes",
-            "Rayos",
+            "Strikes",
             [],
             us_view,
             False,
         ),
         polygon_chart(
             county_id,
-            "Territorio: hogares por km² en 2018",
+            "2018 households per km²",
             "household_density",
-            "Hogares por km²",
+            "Households per km²",
             [],
             us_view,
             False,
         ),
-        polygon_chart(tract_id, "Texas 2018 sobre el territorio", "strikes", "Rayos", [state_filter("Texas")], us_view, True),
+        polygon_chart(tract_id, "Texas 2018 on the territory", "strikes", "Strikes", [state_filter("Texas")], us_view, True),
         polygon_chart(
             tract_id,
-            "Oklahoma 2018 sobre el territorio",
+            "Oklahoma 2018 on the territory",
             "strikes",
-            "Rayos",
+            "Strikes",
             [state_filter("Oklahoma")],
             us_view,
             True,
         ),
         polygon_chart(
             tract_id,
-            "Kansas 2018 sobre el territorio",
+            "Kansas 2018 on the territory",
             "strikes",
-            "Rayos",
+            "Strikes",
             [state_filter("Kansas")],
             us_view,
             True,
         ),
     ]
     for title, scope in (
-        ("Rayos por cuartil de hogares, condados", "Condados de EE.UU."),
-        ("Rayos por cuartil de hogares, tres estados", "Tractos de Texas, Oklahoma y Kansas"),
+        ("Strike share by household quartile, counties", "U.S. counties"),
+        ("Strike share by household quartile, three states", "Tracts in Texas, Oklahoma, and Kansas"),
     ):
         chart_specs.append(
             {
@@ -721,9 +737,9 @@ def publish(counties, tracts, quartile, summaries):
                     "x_axis_sort": "quartile",
                     "x_axis_sort_asc": True,
                     "metrics": [
-                        metric("strike_share", "Parte de los rayos"),
-                        metric("area_share", "Parte del territorio"),
-                        metric("household_share", "Parte de los hogares"),
+                        metric("strike_share", "Share of strikes"),
+                        metric("area_share", "Share of the land"),
+                        metric("household_share", "Share of households"),
                     ],
                     "groupby": [],
                     "adhoc_filters": [scope_filter(scope)],
@@ -731,7 +747,7 @@ def publish(counties, tracts, quartile, summaries):
                     "show_legend": True,
                     "legendOrientation": "top",
                     "y_axis_format": ",.0%",
-                    "y_axis_title": "Parte del total",
+                    "y_axis_title": "Share of the total",
                     "rich_tooltip": True,
                     "color_scheme": "supersetColors",
                 },
@@ -760,28 +776,29 @@ def publish(counties, tracts, quartile, summaries):
         created.append((chart_id, chart_uuid, spec["slice_name"]))
         print("chart", chart_id, spec["slice_name"], flush=True)
 
-    county_summary = next(item for item in summaries if item["scope"] == "Condados de EE.UU.")
-    tract_summary = next(item for item in summaries if item["scope"] == "Tractos de Texas, Oklahoma y Kansas")
+    county_summary = next(item for item in summaries if item["scope"] == "U.S. counties")
+    tract_summary = next(item for item in summaries if item["scope"] == "Tracts in Texas, Oklahoma, and Kansas")
     caption = (
-        "El territorio es el condado y, en Texas, Oklahoma y Kansas, el tracto censal de 2018. "
-        "Los hogares y la población salen del American Community Survey 2014-2018, tablas B11001 y B01003, "
-        "publicado por el Census Bureau. La superficie es el área de tierra del archivo cartográfico del mismo año.\n\n"
-        f"En los condados, el cuartil con más hogares por km² concentra el "
-        f"**{county_summary['q4_strike_share'] * 100:.0f}%** de los rayos que caen en el país, "
-        f"el {county_summary['q4_household_share'] * 100:.0f}% de los hogares y solo el "
-        f"{county_summary['q4_area_share'] * 100:.0f}% del territorio. "
-        f"La correlación de rangos entre hogares por km² y rayos por km² es {county_summary['spearman_density']:.2f}.\n\n"
-        f"En los tractos de Texas, Oklahoma y Kansas el mismo cuartil concentra el "
-        f"**{tract_summary['q4_strike_share'] * 100:.1f}%** de los rayos, "
-        f"el {tract_summary['q4_household_share'] * 100:.0f}% de los hogares y el "
-        f"{tract_summary['q4_area_share'] * 100:.1f}% del territorio. "
-        f"Por encima de la mediana cae el {tract_summary['above_median_strike_share'] * 100:.1f}% de esos rayos. "
+        "The territory is the county and, in Texas, Oklahoma, and Kansas, the 2018 census tract. "
+        "Households and population come from the 2014-2018 American Community Survey, tables B11001 and B01003, "
+        "published by the Census Bureau. Area is the land area in that year's cartographic file.\n\n"
+        f"In the counties, the quartile with the most households per km² holds "
+        f"**{county_summary['q4_strike_share'] * 100:.0f}%** of the strikes that fall in the country, "
+        f"{county_summary['q4_household_share'] * 100:.0f}% of households, and only "
+        f"{county_summary['q4_area_share'] * 100:.0f}% of the land. "
+        f"The rank correlation between households per km² and strikes per km² is {county_summary['spearman_density']:.2f}.\n\n"
+        f"In the tracts of Texas, Oklahoma, and Kansas the same quartile holds "
+        f"**{tract_summary['q4_strike_share'] * 100:.1f}%** of the strikes, "
+        f"{tract_summary['q4_household_share'] * 100:.0f}% of households, and "
+        f"{tract_summary['q4_area_share'] * 100:.1f}% of the land. "
+        f"Above the median falls {tract_summary['above_median_strike_share'] * 100:.1f}% of those strikes. "
         + " ".join(
-            f"{item['scope'].replace('Tractos de ', '')}: {item['q4_strike_share'] * 100:.1f}% de los rayos en el cuartil más denso."
+            f"{label}: {item['q4_strike_share'] * 100:.1f}% of strikes in the densest quartile."
             for item in summaries
-            if item["scope"].startswith("Tractos de ") and "Oklahoma y" not in item["scope"]
+            for label in [{"Texas tracts": "Texas", "Oklahoma tracts": "Oklahoma", "Kansas tracts": "Kansas"}.get(item["scope"], "")]
+            if label
         )
-        + " La frase del video se lee contra estos porcentajes."
+        + " The video sentence is read against these percentages."
     )
     dashboard = api("GET", f"/api/v1/dashboard/{dashboard_id}", token=token)["result"]
     layout = json.loads(dashboard["position_json"])
@@ -844,9 +861,9 @@ def publish(counties, tracts, quartile, summaries):
     add_charts("ROW-territory-quartile", created[5:7], 46)
     metadata.setdefault("label_colors", {}).update(
         {
-            "Parte de los rayos": "#b30000",
-            "Parte del territorio": "#4C78A8",
-            "Parte de los hogares": "#F58518",
+            "Share of strikes": "#b30000",
+            "Share of the land": "#4C78A8",
+            "Share of households": "#F58518",
         }
     )
     metadata.setdefault("global_chart_configuration", {}).setdefault("chartsInScope", [])
@@ -927,12 +944,12 @@ def main():
         dict(zip(tract_population["geoid"], tract_population["population"])),
         tract_strikes,
     )
-    county_quartile, county_summary = quartile_table(counties, "Condados de EE.UU.")
-    tract_quartile, tract_summary = quartile_table(tracts, "Tractos de Texas, Oklahoma y Kansas")
+    county_quartile, county_summary = quartile_table(counties, "U.S. counties")
+    tract_quartile, tract_summary = quartile_table(tracts, "Tracts in Texas, Oklahoma, and Kansas")
     state_frames = []
     state_summaries = []
     for state_name in ("Texas", "Oklahoma", "Kansas"):
-        part, summary = quartile_table(tracts[tracts["state"] == state_name], f"Tractos de {state_name}")
+        part, summary = quartile_table(tracts[tracts["state"] == state_name], f"{state_name} tracts")
         state_frames.append(part)
         state_summaries.append(summary)
     quartile = pd.concat([county_quartile, tract_quartile, *state_frames], ignore_index=True)
@@ -940,8 +957,8 @@ def main():
     (OUT / "household_summary.json").write_text(json.dumps(summaries, indent=2), encoding="utf-8")
     print(json.dumps(summaries, indent=2))
     draw(counties, tracts, quartile[quartile["scope"].isin([
-        "Condados de EE.UU.",
-        "Tractos de Texas, Oklahoma y Kansas",
+        "U.S. counties",
+        "Tracts in Texas, Oklahoma, and Kansas",
     ])])
     publish(counties, tracts, quartile, summaries)
 

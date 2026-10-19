@@ -1,6 +1,6 @@
 [
   {
-    "scope": "Condados de EE.UU.",
+    "scope": "U.S. counties",
     "units": 3142,
     "q4_strike_share": 0.1900709325276529,
     "q4_area_share": 0.13162725305231546,
@@ -10,7 +10,7 @@
     "spearman_density": -0.01063447096572323
   },
   {
-    "scope": "Tractos de Texas, Oklahoma y Kansas",
+    "scope": "Tracts in Texas, Oklahoma, and Kansas",
     "units": 6794,
     "q4_strike_share": 0.0052633431368511495,
     "q4_area_share": 0.003629596348351457,
@@ -20,7 +20,7 @@
     "spearman_density": -0.24872895837063755
   },
   {
-    "scope": "Tractos de Texas",
+    "scope": "Texas tracts",
     "units": 5026,
     "q4_strike_share": 0.0060517291374803375,
     "q4_area_share": 0.004080820727926902,
@@ -30,7 +30,7 @@
     "spearman_density": -0.2606232105145624
   },
   {
-    "scope": "Tractos de Oklahoma",
+    "scope": "Oklahoma tracts",
     "units": 1018,
     "q4_strike_share": 0.00612376310031996,
     "q4_area_share": 0.003261698597796963,
@@ -40,7 +40,7 @@
     "spearman_density": -0.15018502578517068
   },
   {
-    "scope": "Tractos de Kansas",
+    "scope": "Kansas tracts",
     "units": 750,
     "q4_strike_share": 0.002454134403710131,
     "q4_area_share": 0.0022105540362340427,

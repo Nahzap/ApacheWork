@@ -15,7 +15,7 @@ from matplotlib.patches import Patch
 
 ROOT = Path(__file__).resolve().parent
 CSV = ROOT / "outputs" / "_seoul_holiday_days.csv"
-PNG = ROOT / "outputs" / "ejercicio_3_fiel.png"
+PNG = ROOT / "outputs" / "holidays_2017_2018.png"
 
 INK = "#1c1c1c"
 MUTED = "#5e5e5e"
@@ -24,14 +24,14 @@ PAGE = "#f6f4ef"
 ORANGE = "#F58518"
 BLUE = "#4C78A8"
 WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-WEEKDAY_ES = {
-    "Monday": "Lunes",
-    "Tuesday": "Martes",
-    "Wednesday": "Miércoles",
-    "Thursday": "Jueves",
-    "Friday": "Viernes",
-    "Saturday": "Sábado",
-    "Sunday": "Domingo",
+WEEKDAY_LABEL = {
+    "Monday": "Monday",
+    "Tuesday": "Tuesday",
+    "Wednesday": "Wednesday",
+    "Thursday": "Thursday",
+    "Friday": "Friday",
+    "Saturday": "Saturday",
+    "Sunday": "Sunday",
 }
 WEEKDAY_COLORS = {
     "Monday": "#5B8FF9",
@@ -91,7 +91,7 @@ def draw_matching(ax, frame):
         ax.text(
             (start + index - 1) / 2,
             40000,
-            WEEKDAY_ES[current],
+            WEEKDAY_LABEL[current],
             ha="center",
             va="top",
             fontsize=9,
@@ -141,8 +141,8 @@ def render(path=PNG):
     figure.text(
         0.06,
         0.935,
-        "Functioning Day = Yes. Cada barra es el total del día. Adjacent days sigue el calendario. "
-        "Matching weekdays junta los lunes, después los martes, y así hasta el domingo.",
+        "Functioning Day = Yes. Each bar is the daily total. Adjacent days follows the calendar. "
+        "Matching weekdays groups Mondays, then Tuesdays, through Sunday.",
         fontsize=10,
         color=MUTED,
         ha="left",
@@ -150,13 +150,6 @@ def render(path=PNG):
     figure.subplots_adjust(left=0.07, right=0.98, top=0.90, bottom=0.16, hspace=0.55)
     path.parent.mkdir(parents=True, exist_ok=True)
     figure.savefig(path, dpi=120, facecolor=figure.get_facecolor())
-    official = path.with_name("ejercicio_2_oficial.png")
-    if official != path:
-        try:
-            official.write_bytes(path.read_bytes())
-            print("figure", official)
-        except OSError:
-            print("figure", path, "(oficial abierto, no se pudo reemplazar)")
     plt.close(figure)
     print("figure", path)
     return path

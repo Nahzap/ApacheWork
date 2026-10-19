@@ -1,66 +1,66 @@
 # ApacheWork
 
-Dos estudios, en carpetas distintas. No comparten datos ni tableros.
+Two studies, in separate folders. They do not share data or dashboards.
 
-## Bicicletas en Seúl
+## Seoul bike rentals
 
-El detalle está en [analyses/seoul_bikes/README.md](analyses/seoul_bikes/README.md).
+The notes are in [analyses/seoul_bikes/README.md](analyses/seoul_bikes/README.md).
 
-### 1. Mantenimiento, 2018
+### 1. Maintenance, 2018
 
-En los días hábiles, entre las 8 a.m. y las 5 p.m., la hora con menos alquileres es las **10 a.m.**: 548 bicicletas de promedio, y la más baja en 171 de 240 jornadas.
+On weekdays, between 8 a.m. and 5 p.m., the hour with the fewest rentals is **10 a.m.**: 548 bikes on average, and the lowest hour on 171 of 240 days.
 
-![Mantenimiento de bicicletas en Seúl, 2018](analyses/seoul_bikes/outputs/ejercicio_1_oficial.png)
+![Seoul bike maintenance, 2018](analyses/seoul_bikes/outputs/maintenance_2018.png)
 
-### 2. Feriados, 2017 y 2018
+### 2. Holidays, 2017 and 2018
 
-**Impact of Holidays on Seoul Bike Rentals in 2017 and 2018.** Solo días con Functioning Day = Yes. Cada barra es el total del día. Un feriado promedia 12,700 bicicletas y un día común 17,727, un 28.4% menos. Adjacent days sigue el calendario. Matching weekdays junta cada día de la semana y lo marca con un color hasta el último día.
+**Impact of Holidays on Seoul Bike Rentals in 2017 and 2018.** Only days with Functioning Day = Yes. Each bar is the daily total. A holiday averages 12,700 bikes and a regular day 17,727, 28.4% fewer. Adjacent days follows the calendar. Matching weekdays groups each weekday and marks it with a color through the last day.
 
-![Impacto de los feriados en los alquileres de Seúl, 2017 y 2018](analyses/seoul_bikes/outputs/ejercicio_2_oficial.png)
+![Impact of holidays on Seoul bike rentals, 2017 and 2018](analyses/seoul_bikes/outputs/holidays_2017_2018.png)
 
-## Rayos en Estados Unidos
+## Lightning in the United States
 
-El detalle está en [analyses/lightning/README.md](analyses/lightning/README.md).
+The notes are in [analyses/lightning/README.md](analyses/lightning/README.md).
 
-### 1. Lightning strikes: ejercicios de Tableau
+### 1. Lightning strikes: Tableau exercises
 
-Todo Estados Unidos en 2018. El calor es la suma de rayos de cada celda. Al lado, el mismo mapa con el color según la cantidad: azul de 1 a 2 rayos, rojo de 40 a 108. Abajo, strikes por mes y año, la caja diaria por trimestre y el histograma de strikes entre 1 y 200.
+The whole United States in 2018. Color is the sum of strikes in each cell. Beside it, the same map colored by count: blue for 1 to 2 strikes, red for 40 to 108. Below, strikes by month and year, daily strikes by quarter, and the histogram of strikes from 1 to 200.
 
-![Lightning strikes: ejercicios de Tableau](analyses/lightning/outputs/lightning_tableau.png)
+![Lightning strikes: Tableau exercises](analyses/lightning/outputs/lightning_tableau.png)
 
-### 2. Historia: rayos en Estados Unidos, 2009-2018
+### 2. Lightning history: United States, 2009-2018
 
-El archivo pasa de **30.1 a 44.6 millones**. Los mapas de condado comparan 2009 y 2018 en la misma escala. Texas, Oklahoma y Kansas se ven por tracto: 4.1, 1.6 y 1.2 millones de rayos. En los condados, el cuartil más denso se queda con el 79% de los hogares y el 19% de los rayos. En los tractos de los tres estados, ese cuartil se queda con menos del 1% de los rayos.
+The file goes from **30.1 to 44.6 million** strikes. The county maps compare 2009 and 2018 on the same scale. Texas, Oklahoma, and Kansas are drawn by tract: 4.1, 1.6, and 1.2 million strikes. In the counties, the densest quartile holds 79% of households and 19% of strikes. In the tracts of the three states, that quartile holds under 1% of the strikes.
 
-![Historia: rayos en Estados Unidos, 2009-2018](analyses/lightning/outputs/historia_rayos.png)
+![Lightning history: United States, 2009-2018](analyses/lightning/outputs/lightning_history.png)
 
-### 3. Texas, Oklahoma y Kansas, 2018
+### 3. Texas, Oklahoma, and Kansas, 2018
 
-Los rayos de estos tres estados caen en el territorio, no en los barrios densos. En Texas, el **42%** queda a menos de 150 km de una ciudad grande. En los tractos, el cuartil con más hogares por km² se queda con menos del **1%** de los rayos en cada estado.
+Strikes in these three states fall on the land, not in the dense neighborhoods. In Texas, **42%** fall within 150 km of a large city. In the tracts, the quartile with the most households per km² keeps under **1%** of the strikes in each state.
 
-![Texas, Oklahoma y Kansas en 2018](analyses/lightning/outputs/ejercicio_2_oficial.png)
+![Texas, Oklahoma, and Kansas in 2018](analyses/lightning/outputs/texas_oklahoma_kansas_2018.png)
 
-### 4. Resumen, 2009-2018
+### 4. Summary, 2009-2018
 
-El archivo pasa de **30.1 a 44.6 millones** de rayos (+48%). 2012 queda por debajo de 2009. El centro no le gana terreno a la costa en porcentaje, y el cuartil de condados con más hogares por km² se queda con el 79% de los hogares y solo el 19% de los rayos.
+The file goes from **30.1 to 44.6 million** strikes (+48%). 2012 stays below 2009. The center does not gain share from the coast, and the county quartile with the most households per km² holds 79% of households and only 19% of strikes.
 
-![Resumen de rayos en Estados Unidos, 2009-2018](analyses/lightning/outputs/ejercicio_1_oficial.png)
+![Summary of lightning in the United States, 2009-2018](analyses/lightning/outputs/summary_2009_2018.png)
 
-## Cómo está armado
+## How it is built
 
-Python filtra y agrega. Superset solo dibuja esas tablas. Cada estudio vive en su carpeta.
+Python filters and aggregates. Superset only draws those tables. Each study lives in its own folder.
 
 ```
-analyses/seoul_bikes/     bicicletas: mantenimiento, feriados e imágenes
-analyses/lightning/       rayos: totales, territorio, mapas e imágenes
-deploy/superset.md        cómo levantar el Superset local
+analyses/seoul_bikes/     bikes: maintenance, holidays, and figures
+analyses/lightning/       lightning: totals, territory, maps, and figures
+deploy/superset.md        how to start the local Superset
 ```
 
-Los mapas de rayos usan un solo fondo, OpenStreetMap con MapLibre. El color va encima de los nombres. El tooltip muestra latitud y después longitud.
+The lightning maps use one basemap, OpenStreetMap through MapLibre. Color sits above the place names. The tooltip shows latitude, then longitude.
 
-## Entorno
+## Environment
 
-Python 3.11. Dependencias en `requirements.txt`.
+Python 3.11. Dependencies are in `requirements.txt`.
 
 ```powershell
 python -m venv .venv
@@ -68,15 +68,15 @@ python -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
-Los CSV de origen no están en el repositorio. La ruta de cada archivo está en el README de su estudio.
+The source CSVs are not in this repository. Each study's README gives the path on this machine.
 
 ## Superset
 
-El clon de Apache Superset y el disco de Docker quedan fuera de git. La guía de arranque está en [deploy/superset.md](deploy/superset.md).
+The Apache Superset clone and the Docker disk stay out of git. The startup guide is [deploy/superset.md](deploy/superset.md).
 
-## Qué no entra en este repositorio
+## What this repository leaves out
 
-- El árbol upstream de Superset y `docker-data/`.
-- El microdato de bicicletas.
-- El microdato de rayos, los extractos del Census Bureau y los polígonos generados.
-- El gimnasio de práctica que está en `practice/` y `Docs/` en la máquina local.
+- The upstream Superset tree and `docker-data/`.
+- The bike microdata.
+- The lightning microdata, the Census Bureau extracts, and the generated polygons.
+- The local practice gym in `practice/` and `Docs/`.

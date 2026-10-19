@@ -14,7 +14,7 @@ from matplotlib.colors import LinearSegmentedColormap
 
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "outputs"
-PNG = OUT / "ejercicio_2_oficial.png"
+PNG = OUT / "texas_oklahoma_kansas_2018.png"
 STATES = ("Texas", "Oklahoma", "Kansas")
 
 INK = "#1c1c1c"
@@ -76,29 +76,29 @@ def draw_state(ax, frame, name):
     colorbar.outline.set_visible(False)
     colorbar.ax.tick_params(labelsize=7, length=0, colors=MUTED)
     millions = part["strikes_sum"].sum() / 1_000_000
-    ax.set_xlabel(f"{millions:.1f} millones de rayos", color=MUTED, fontsize=8)
+    ax.set_xlabel(f"{millions:.1f} million strikes", color=MUTED, fontsize=8)
 
 
 def draw_cities(ax, cities):
     order = cities.set_index("state").loc[list(STATES)]
     positions = range(len(STATES))
-    ax.bar([item - 0.18 for item in positions], order["within_80km"] * 100, width=0.36, color=ORANGE, label="A menos de 80 km", zorder=3)
-    ax.bar([item + 0.18 for item in positions], order["within_150km"] * 100, width=0.36, color=BLUE, label="A menos de 150 km", zorder=3)
+    ax.bar([item - 0.18 for item in positions], order["within_80km"] * 100, width=0.36, color=ORANGE, label="Within 80 km", zorder=3)
+    ax.bar([item + 0.18 for item in positions], order["within_150km"] * 100, width=0.36, color=BLUE, label="Within 150 km", zorder=3)
     ax.set_xticks(list(positions))
     ax.set_xticklabels(list(STATES))
     ax.set_ylim(0, 100)
-    ax.set_ylabel("Parte de los rayos (%)", color=MUTED, fontsize=9)
+    ax.set_ylabel("Share of strikes (%)", color=MUTED, fontsize=9)
     style_axis(ax)
-    panel_title(ax, "Cerca de una ciudad grande")
+    panel_title(ax, "Near a large city")
     ax.legend(frameon=False, fontsize=8, labelcolor=INK, loc="upper left")
 
 
 def draw_tracts(ax, quartiles):
-    labels = ["Q1\nmenos denso", "Q2", "Q3", "Q4\nmás denso"]
+    labels = ["Q1\nleast dense", "Q2", "Q3", "Q4\nmost dense"]
     colors = (ORANGE, BLUE, "#54A24B")
     width = 0.24
     for index, state in enumerate(STATES):
-        part = quartiles[quartiles["scope"] == f"Tractos de {state}"].copy()
+        part = quartiles[quartiles["scope"] == f"{state} tracts"].copy()
         part["order"] = part["quartile"].str[:2]
         part = part.sort_values("order")
         offset = (index - 1) * width
@@ -113,9 +113,9 @@ def draw_tracts(ax, quartiles):
     ax.set_xticks(range(4))
     ax.set_xticklabels(labels, fontsize=8)
     ax.set_ylim(0, 100)
-    ax.set_ylabel("Parte de los rayos (%)", color=MUTED, fontsize=9)
+    ax.set_ylabel("Share of strikes (%)", color=MUTED, fontsize=9)
     style_axis(ax)
-    panel_title(ax, "Tractos, por hogares por km²")
+    panel_title(ax, "Tracts, by households per km²")
     ax.legend(frameon=False, fontsize=8, labelcolor=INK, loc="upper right", ncol=3)
 
 
@@ -136,7 +136,7 @@ def render(path=PNG):
     draw_tracts(figure.add_subplot(grid[1, 2]), quartiles)
     texas = cities.set_index("state").loc["Texas"]
     figure.suptitle(
-        "Texas, Oklahoma y Kansas, 2018",
+        "Texas, Oklahoma, and Kansas, 2018",
         fontsize=18,
         color=INK,
         x=0.055,
@@ -146,9 +146,9 @@ def render(path=PNG):
     figure.text(
         0.055,
         0.935,
-        "Los rayos de 2018 caen en el territorio, no en los barrios densos. "
-        f"En Texas, {texas['within_150km'] * 100:.0f}% queda a menos de 150 km de una ciudad grande. "
-        "En los tractos, el cuartil más denso se queda con menos del 1% de los rayos en cada estado.",
+        "The 2018 strikes fall on the land, not in the dense neighborhoods. "
+        f"In Texas, {texas['within_150km'] * 100:.0f}% fall within 150 km of a large city. "
+        "In the tracts, the densest quartile keeps under 1% of the strikes in each state.",
         fontsize=10,
         color=MUTED,
         ha="left",

@@ -473,28 +473,28 @@ def publish(frame, bands, summary):
             "chartsInScope": [],
         },
     }
-    direction = "más bajo" if summary["difference_pct"] < 0 else "más alto"
+    direction = "lower" if summary["difference_pct"] < 0 else "higher"
     intro = "\n".join(
         [
             f"**{DASHBOARD_TITLE}**",
             "",
-            "Solo entran los días con Functioning Day = Yes. La barra es el total del día, la suma de las horas. Holiday va en naranja y No holiday en azul.",
+            "Only days with Functioning Day = Yes are included. Each bar is the daily total, the sum of the hours. Holiday is orange and No holiday is blue.",
             "",
             (
-                f"En {summary['holidays']} feriados y {summary['days'] - summary['holidays']} días comunes, "
-                f"el total medio de un feriado es {summary['holiday_mean']:,} bicicletas y el de un día común es "
-                f"{summary['regular_mean']:,}. El feriado queda {abs(summary['difference_pct'])} % {direction} que el día común."
+                f"Across {summary['holidays']} holidays and {summary['days'] - summary['holidays']} regular days, "
+                f"a holiday averages {summary['holiday_mean']:,} bikes and a regular day averages "
+                f"{summary['regular_mean']:,}. The holiday total is {abs(summary['difference_pct'])}% {direction} than a regular day."
             ),
             "",
             (
-                f"Contra el día común anterior y el siguiente, {summary['below_neighbor']} de {summary['with_neighbor']} "
-                f"feriados alquilan menos. Contra los otros mismos días de la semana de ese año, "
-                f"{summary['below_weekday']} de {summary['with_weekday']} alquilan menos."
+                f"Against the previous and next regular day, {summary['below_neighbor']} of {summary['with_neighbor']} "
+                f"holidays rent fewer bikes. Against the other same weekdays that year, "
+                f"{summary['below_weekday']} of {summary['with_weekday']} rent fewer."
             ),
             "",
-            "En Matching weekdays el fondo marca el día: lunes azul, martes verde, miércoles amarillo, jueves rojo, viernes celeste, sábado violeta y domingo rosa. Cada color sigue hasta el último día de esa serie.",
+            "On Matching weekdays the background marks the day: Monday blue, Tuesday green, Wednesday yellow, Thursday red, Friday cyan, Saturday purple, and Sunday pink. Each color runs through the last day of that series.",
             "",
-            "Year mueve los dos gráficos. Month deja un mes en Adjacent days. Weekday deja un día de la semana en Matching weekdays.",
+            "Year moves both charts. Month keeps one month on Adjacent days. Weekday keeps one weekday on Matching weekdays.",
         ]
     )
     layout = {

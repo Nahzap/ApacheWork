@@ -1,36 +1,36 @@
-# Rayos en Estados Unidos, 2009-2018
+# Lightning in the United States, 2009-2018
 
-El archivo tiene 12,875,911 filas: `date`, `number_of_strikes`, `x_coord` (longitud) y `y_coord` (latitud). La grilla nativa es de 0.1°. Solo hay cuatro años completos, de enero a diciembre: 2009, 2012, 2015 y 2018. Los otros años del título no están y no se dibujan como cero.
+The file has 12,875,911 rows: `date`, `number_of_strikes`, `x_coord` (longitude), and `y_coord` (latitude). The native grid is 0.1°. Only four years are complete, January through December: 2009, 2012, 2015, and 2018. The other years in the title are absent and are not drawn as zero.
 
-El CSV de origen no se redistribuye. En esta máquina está en `D:\Coursera\Course 2\tableau_main_2009_to_2018.csv`. Otra ruta se indica con `LIGHTNING_CSV`.
+The source CSV is not redistributed. On this machine it is `D:\Coursera\Course 2\tableau_main_2009_to_2018.csv`. Another path is set with `LIGHTNING_CSV`.
 
-## Tres frases del video, medidas
+## Three sentences from the video, measured
 
 **“Lightning strikes in the U.S. have increased 50% over the last decade.”**
 
-En todo el archivo, 2009 suma 30.1 millones y 2018 suma 44.6 millones: +48%. El video anota 30.1M y 45M, y redondea el aumento a 50%. En el recorte continental (latitud 24.5 a 49.5, longitud −125 a −66.5) el paso es de 29.2M a 39.4M, +35%. 2012 queda en 28.8M, por debajo de 2009. No es una subida año a año.
+Across the whole file, 2009 sums to 30.1 million and 2018 sums to 44.6 million: +48%. The video notes 30.1M and 45M, and rounds the increase to 50%. In the continental cut (latitude 24.5 to 49.5, longitude −125 to −66.5) the change is from 29.2M to 39.4M, +35%. 2012 is 28.8M, below 2009. It is not a rise every year.
 
 **“Lightning strikes have moved from the East Coast to the Central Mainlands over the last decade.”**
 
-Dentro del continente, la costa este (longitud ≥ −83) pasa de 23.3% a 21.3% y el centro (−103 a −90) se queda en 42.3%. En millones, la costa este sube de 6.8 a 8.4 y el centro de 12.3 a 16.7. El centro de masa se mueve unos 62 km al oeste, de (−91.76, 34.78) a (−92.43, 34.68). Las dos regiones ganan rayos. El cambio de lugar que sí aparece en el archivo está fuera del recorte: al sur de 24.5° se pasa de 0.6M a 4.4M.
+Inside the continent, the East Coast (longitude ≥ −83) goes from 23.3% to 21.3% and the center (−103 to −90) stays at 42.3%. In millions, the East Coast rises from 6.8 to 8.4 and the center from 12.3 to 16.7. The center of mass moves about 62 km west, from (−91.76, 34.78) to (−92.43, 34.68). Both regions gain strikes. The place change that does show up in the file is outside the cut: south of 24.5° goes from 0.6M to 4.4M.
 
 **“Most number of lightning strikes in 2018 happened in densely populated household areas.”**
 
-El archivo de rayos no trae hogares. Se unieron el American Community Survey 2018 de 5 años (tablas B11001, hogares, y B01003, población) y los límites cartográficos TIGER 2018. En los condados, el cuartil con más hogares por km² concentra el 79% de los hogares, el 13% de la tierra y el 19% de los rayos que caen dentro de un condado. La correlación de rangos entre hogares por km² y rayos por km² es −0.01.
+The lightning file has no households. It was joined to the 2018 5-year American Community Survey (tables B11001, households, and B01003, population) and the 2018 TIGER boundaries. In the counties, the quartile with the most households per km² holds 79% of households, 13% of the land, and 19% of the strikes that fall inside a county. The rank correlation between households per km² and strikes per km² is −0.01.
 
-En los tractos de Texas, Oklahoma y Kansas el mismo cuartil concentra el 27% de los hogares, el 0.4% de la tierra y el 0.5% de los rayos. Por estado, la parte de rayos en ese cuartil es Texas 0.6%, Oklahoma 0.6% y Kansas 0.2%. La asignación de cada celda de 0.1° a los tractos reparte 16 puntos interiores, porque un tracto urbano es más chico que la celda.
+In the tracts of Texas, Oklahoma, and Kansas the same quartile holds 27% of households, 0.4% of the land, and 0.5% of the strikes. By state, the strike share in that quartile is Texas 0.6%, Oklahoma 0.6%, and Kansas 0.2%. Assigning each 0.1° cell to tracts splits 16 interior points, because an urban tract is smaller than the cell.
 
-Los rayos siguen el territorio. No se concentran en los barrios con más hogares por km².
+The strikes follow the land. They do not concentrate in the neighborhoods with the most households per km².
 
-## Mapas
+## Maps
 
-La longitud va primero en la geometría de deck.gl, porque ese es el orden del mapa. El texto que se copia a Google Maps va al revés: latitud, longitud. Una celda de Dallas es `32.78, -96.80`. Si se pega primero la longitud, Google lee una latitud imposible y lleva el punto hacia la Antártida.
+Longitude comes first in the deck.gl geometry, because that is the map order. The text copied to Google Maps is the reverse: latitude, longitude. A Dallas cell is `32.78, -96.80`. Pasting longitude first makes Google read an impossible latitude and sends the point toward Antarctica.
 
-El fondo es OpenStreetMap vía MapLibre. Condados y tractos se dibujan encima, con opacidad 46, para que el nombre del lugar quede debajo del color.
+The basemap is OpenStreetMap through MapLibre. Counties and tracts are drawn on top, at opacity 46, so the place name stays under the color.
 
-## Orden de ejecución
+## Run order
 
-Cada script publica en Superset. Hay que correrlos en este orden, porque el último deja el tablero en el estado publicado:
+Each script publishes to Superset. Run them in this order, because the last one leaves the dashboard in the published state:
 
 ```powershell
 python analyses/lightning/lightning_story.py
@@ -39,25 +39,25 @@ python analyses/lightning/lightning_basemap.py
 python analyses/lightning/lightning_labels.py
 ```
 
-`lightning_story.py` reescribe los gráficos anuales. `lightning_territory.py` baja el ACS y los shapefiles a `outputs/census/` (eso no se versiona) y arma condados y tractos. `lightning_basemap.py` asigna cada celda de 0.1° a un condado. `lightning_labels.py` suma 2009 por condado, pasa todos los mapas al mismo fondo y quita del tablero las cuadrículas que tapaban los nombres.
+`lightning_story.py` rewrites the annual charts. `lightning_territory.py` downloads the ACS and the shapefiles into `outputs/census/` (that folder is not versioned) and builds counties and tracts. `lightning_basemap.py` assigns each 0.1° cell to a county. `lightning_labels.py` sums 2009 by county, puts every map on the same basemap, and removes the grids that covered the names.
 
 ## Location Metrics
 
-El segundo tablero, `Location Metrics`, sale de `location_metrics.py`. El mapa usa los condados del territorio, el mismo fondo con los nombres debajo del color. Cada condado lleva la cantidad de rayos de sus celdas. Es una sola consulta, y mover el mapa no la repite. **Interactive Filter** elige el año y mueve las tres cifras de **Metrics for the Year**: total, promedio y máximo. Un clic en un lugar mueve solo **Location Metrics**. Otro clic vuelve a mostrar todos los lugares. El fondo y el orden latitud, longitud son los mismos que en el tablero anterior.
+The second dashboard, `Location Metrics`, comes from `location_metrics.py`. The map uses the territory counties, the same basemap, with names under the color. Each county carries the strike count of its cells. It is one query, and moving the map does not repeat it. **Interactive Filter** chooses the year and moves the three **Metrics for the Year** figures: total, average, and maximum. A click on a place moves only **Location Metrics**. Another click shows every place again. The basemap and the latitude-then-longitude order match the previous dashboard.
 
 ```powershell
 python analyses/lightning/location_metrics.py
 ```
 
-## Qué queda en el repositorio
+## What stays in the repository
 
-| Ruta | Contenido |
+| Path | Contents |
 | --- | --- |
-| `figures/` | Seis figuras de revisión, hechas con seaborn |
-| `outputs/annual.csv` | Totales, regiones y centro de masa de los cuatro años |
-| `outputs/summary.json` | El mismo resumen en JSON |
-| `outputs/household_summary.json` | Cuartiles de hogares y correlación |
-| `outputs/lightning_household_quartile.csv` | Tabla larga de esos cuartiles |
-| `data/us-states.json` | Contorno estatal usado en el primer mapa de revisión |
+| `figures/` | Six review figures, drawn with seaborn |
+| `outputs/annual.csv` | Totals, regions, and center of mass for the four years |
+| `outputs/summary.json` | The same summary as JSON |
+| `outputs/household_summary.json` | Household quartiles and the correlation |
+| `outputs/lightning_household_quartile.csv` | Long table of those quartiles |
+| `data/us-states.json` | State outline used on the first review map |
 
-Las tablas de celdas y los polígonos se regeneran. Pesan decenas de megabytes y no hacen falta para leer el resultado.
+The cell tables and the polygons are regenerated. They weigh tens of megabytes and are not needed to read the result.

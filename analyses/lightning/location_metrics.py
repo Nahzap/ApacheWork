@@ -391,9 +391,9 @@ def publish(frame):
                 "height": 16,
                 "code": "\n".join(
                     [
-                        "**Interactive Filter** está a la izquierda. Elegí un año, o dejá los cuatro marcados. Eso actualiza el mapa y **Metrics for the Year**.",
+                        "**Interactive Filter** is on the left. Choose a year, or leave all four selected. That updates the map and **Metrics for the Year**.",
                         "",
-                        "Choose a point on the map to view location specific metrics. Otro clic en el mismo punto vuelve a mostrar todos los lugares. El tooltip es latitud, longitud.",
+                        "Choose a point on the map to view location specific metrics. Another click on the same point shows every place again. The tooltip is latitude, then longitude.",
                     ]
                 ),
             },

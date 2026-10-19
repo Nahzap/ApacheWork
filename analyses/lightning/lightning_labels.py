@@ -49,8 +49,8 @@ def tooltip(strike_field):
     return (
         "<div><b>{{name}}, {{state}}</b></div>"
         "<div>{{google}}</div>"
-        f"<div>Rayos: {{{{{strike_field}}}}}</div>"
-        "<div>Hogares por km²: {{household_density}}</div>"
+        f"<div>Strikes: {{{{{strike_field}}}}}</div>"
+        "<div>Households per km²: {{household_density}}</div>"
     )
 
 
@@ -111,7 +111,7 @@ def polygon_2009(dataset_id):
         "datasource": f"{dataset_id}__table",
         "line_column": "polygon",
         "line_type": "json",
-        "metric": territory.metric("strikes_2009", "Rayos"),
+        "metric": territory.metric("strikes_2009", "Strikes"),
         "adhoc_filters": [],
         "row_limit": 20000,
         "filter_nulls": True,
@@ -170,7 +170,7 @@ def retile_dashboard(layout, chart_id, chart_uuid):
         "meta": {
             "chartId": chart_id,
             "uuid": chart_uuid,
-            "sliceName": "Rayos en 2009 sobre el territorio",
+            "sliceName": "2009 strikes on the territory",
             "width": 6,
             "height": 70,
         },
@@ -198,14 +198,14 @@ def retile_dashboard(layout, chart_id, chart_uuid):
     for key, node in layout.items():
         if isinstance(node, dict) and node.get("type") == "MARKDOWN":
             code = node.get("meta", {}).get("code", "")
-            old = "El archivo no trae hogares ni población, así que esa frase no se puede comprobar aquí."
+            old = "The file has no households or population, so that sentence cannot be checked from it alone."
             if old in code:
                 node["meta"]["code"] = code.replace(
                     old,
-                    "Esa frase se comprueba más abajo con los hogares del censo, dibujados sobre el mismo mapa.",
+                    "That sentence is checked below with census households, drawn on the same map.",
                 )
-            note = "En el mapa, el nombre del lugar queda debajo de los rayos. El tooltip muestra latitud, longitud, el orden que usa Google Maps."
-            if note not in node["meta"]["code"] and "cuartil con más hogares" in node["meta"]["code"]:
+            note = "On the map, the place name sits under the strikes. The tooltip shows latitude, then longitude, the order Google Maps uses."
+            if note not in node["meta"]["code"] and "densest quartile" in node["meta"]["code"]:
                 node["meta"]["code"] = node["meta"]["code"].rstrip() + "\n\n" + note
 
 
@@ -227,7 +227,7 @@ def main():
     for item in charts:
         by_name.setdefault(item["slice_name"], item)
 
-    title = "Rayos en 2009 sobre el territorio"
+    title = "2009 strikes on the territory"
     params = polygon_2009(county_id)
     payload = {
         "slice_name": title,

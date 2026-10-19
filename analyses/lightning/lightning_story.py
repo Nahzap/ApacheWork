@@ -27,7 +27,7 @@ GEOJSON = ROOT / "data" / "us-states.json"
 OUT = ROOT / "outputs"
 FIG = ROOT / "figures"
 OPENER = urllib.request.build_opener(urllib.request.HTTPCookieProcessor())
-DASHBOARD_TITLE = "Historia: rayos en Estados Unidos, 2009-2018"
+DASHBOARD_TITLE = "Lightning history: United States, 2009-2018"
 
 YEARS = np.arange(2009, 2019)
 LON0, DLON, NLON = -130.0, 0.5, 140
@@ -332,8 +332,8 @@ def draw(annual, grid, states, city, rows):
     change_conus = last["conus_millions"] / first["conus_millions"] - 1
 
     figure, axis = plt.subplots(figsize=(11, 6))
-    sns.lineplot(data=annual, x="year", y="all_millions", marker="o", color="#b30000", label="Todo el archivo", ax=axis)
-    sns.lineplot(data=annual, x="year", y="conus_millions", marker="o", color="#4C78A8", label="Continente", ax=axis)
+    sns.lineplot(data=annual, x="year", y="all_millions", marker="o", color="#b30000", label="Entire file", ax=axis)
+    sns.lineplot(data=annual, x="year", y="conus_millions", marker="o", color="#4C78A8", label="Continental U.S.", ax=axis)
     axis.annotate(
         f"{first['all_millions']:.1f}M",
         (first["year"], first["all_millions"]),
@@ -346,12 +346,12 @@ def draw(annual, grid, states, city, rows):
         textcoords="offset points",
         xytext=(-52, 8),
     )
-    axis.set_title("Rayos por año. El archivo solo trae 2009, 2012, 2015 y 2018")
-    axis.set_xlabel("Año")
-    axis.set_ylabel("Rayos (millones)")
+    axis.set_title("Strikes by year. The file only contains 2009, 2012, 2015, and 2018")
+    axis.set_xlabel("Year")
+    axis.set_ylabel("Strikes (millions)")
     axis.set_xticks(list(annual["year"]))
     figure.tight_layout()
-    figure.savefig(FIG / "01_anual.png", dpi=140)
+    figure.savefig(FIG / "01_annual.png", dpi=140)
     plt.close(figure)
 
     long = annual.melt(
@@ -362,18 +362,18 @@ def draw(annual, grid, states, city, rows):
     )
     long["region"] = long["region"].map(
         {
-            "east_millions": "Costa este",
-            "gap_millions": "Interior este",
-            "central_millions": "Centro",
-            "west_millions": "Oeste",
-            "outside_millions": "Fuera del continente",
+            "east_millions": "East Coast",
+            "gap_millions": "East interior",
+            "central_millions": "Central",
+            "west_millions": "West",
+            "outside_millions": "Outside the continent",
         }
     )
     figure, axes = plt.subplots(1, 2, figsize=(14, 6))
     sns.lineplot(data=long, x="year", y="millions", hue="region", marker="o", ax=axes[0])
-    axes[0].set_title("Millones de rayos")
-    axes[0].set_ylabel("Rayos (millones)")
-    axes[0].set_xlabel("Año")
+    axes[0].set_title("Strikes, in millions")
+    axes[0].set_ylabel("Strikes (millions)")
+    axes[0].set_xlabel("Year")
     axes[0].set_xticks(list(annual["year"]))
     shares = annual.melt(
         id_vars="year",
@@ -383,20 +383,20 @@ def draw(annual, grid, states, city, rows):
     )
     shares["region"] = shares["region"].map(
         {
-            "east_share": "Costa este (lon ≥ -83)",
-            "gap_share": "Interior este (-90 a -83)",
-            "central_share": "Centro (-103 a -90)",
-            "west_share": "Oeste (lon < -103)",
+            "east_share": "East Coast (lon ≥ -83)",
+            "gap_share": "East interior (-90 to -83)",
+            "central_share": "Central (-103 to -90)",
+            "west_share": "West (lon < -103)",
         }
     )
     sns.lineplot(data=shares, x="year", y="share", hue="region", marker="o", ax=axes[1])
-    axes[1].set_title("Parte del total continental")
-    axes[1].set_ylabel("Parte")
-    axes[1].set_xlabel("Año")
+    axes[1].set_title("Share of the continental total")
+    axes[1].set_ylabel("Share")
+    axes[1].set_xlabel("Year")
     axes[1].set_xticks(list(annual["year"]))
     axes[1].yaxis.set_major_formatter(plt.FuncFormatter(lambda value, _: f"{value:.0%}"))
     figure.tight_layout()
-    figure.savefig(FIG / "02_regiones.png", dpi=140)
+    figure.savefig(FIG / "02_regions.png", dpi=140)
     plt.close(figure)
 
     lon_centers = LON0 + (np.arange(NLON) + 0.5) * DLON
@@ -416,21 +416,21 @@ def draw(annual, grid, states, city, rows):
             aspect="auto",
         )
         axis.set_title(str(year))
-        axis.set_xlabel("Longitud")
+        axis.set_xlabel("Longitude")
         axis.set_xlim(-125, -66)
         axis.set_ylim(24, 50)
-    axes[0].set_ylabel("Latitud")
-    figure.colorbar(image, ax=axes, fraction=0.03, pad=0.02, label="Rayos por celda de 0.5°")
-    figure.suptitle("Misma escala de color en 2009 y 2018")
-    figure.savefig(FIG / "03_mapas.png", dpi=140, bbox_inches="tight")
+    axes[0].set_ylabel("Latitude")
+    figure.colorbar(image, ax=axes, fraction=0.03, pad=0.02, label="Strikes per 0.5° cell")
+    figure.suptitle("Same color scale in 2009 and 2018")
+    figure.savefig(FIG / "03_maps.png", dpi=140, bbox_inches="tight")
     plt.close(figure)
 
     figure, axes = plt.subplots(1, 3, figsize=(15, 4.8))
     for axis, state in zip(axes, ("Texas", "Oklahoma", "Kansas")):
         part = states[states["state"] == state]
         axis.set_title(f"{state} 2018")
-        axis.set_xlabel("Longitud")
-        axis.set_ylabel("Latitud")
+        axis.set_xlabel("Longitude")
+        axis.set_ylabel("Latitude")
         if part.empty:
             continue
         pivot = part.pivot_table(index="latitude", columns="longitude", values="strikes", aggfunc="sum")
@@ -449,7 +449,7 @@ def draw(annual, grid, states, city, rows):
         )
         figure.colorbar(image, ax=axis, fraction=0.046, pad=0.04)
     figure.tight_layout()
-    figure.savefig(FIG / "04_estados.png", dpi=140)
+    figure.savefig(FIG / "04_states.png", dpi=140)
     plt.close(figure)
 
     slope = np.polyfit(annual["year"], annual["all_millions"], 1)[0]
@@ -576,12 +576,12 @@ def publish(annual, grids, states, summary):
             api("DELETE", f"/api/v1/dashboard/{item['id']}", token=token, csrf=csrf)
     charts = api("GET", "/api/v1/chart/?q=(page:0,page_size:300)", token=token)["result"]
     names = {
-        "Rayos por año",
-        "Dónde aumentaron los rayos",
-        "Parte regional dentro del continente",
-        "Centro de masa de los rayos",
-        "Rayos en 2009",
-        "Rayos en 2018",
+        "Strikes by year",
+        "Where the strikes increased",
+        "Regional share inside the continent",
+        "Center of mass of the strikes",
+        "Strikes in 2009",
+        "Strikes in 2018",
         "Texas 2018",
         "Oklahoma 2018",
         "Kansas 2018",
@@ -626,7 +626,7 @@ def publish(annual, grids, states, summary):
                 "datasource": f"{dataset_id}__table",
                 "x_axis": "longitude",
                 "groupby": ["latitude"],
-                "metric": metric("strikes", "Rayos"),
+                "metric": metric("strikes", "Strikes"),
                 "adhoc_filters": filters,
                 "row_limit": 20000,
                 "sort_x_axis": "alpha_asc",
@@ -647,7 +647,7 @@ def publish(annual, grids, states, summary):
 
     chart_specs = [
         {
-            "slice_name": "Rayos por año",
+            "slice_name": "Strikes by year",
             "viz_type": "echarts_timeseries_line",
             "datasource_id": annual_id,
             "params": {
@@ -657,8 +657,8 @@ def publish(annual, grids, states, summary):
                 "x_axis_sort": "year_label",
                 "x_axis_sort_asc": True,
                 "metrics": [
-                    metric("all_millions", "Todo el archivo"),
-                    metric("conus_millions", "Continente"),
+                    metric("all_millions", "Entire file"),
+                    metric("conus_millions", "Continental U.S."),
                 ],
                 "groupby": [],
                 "adhoc_filters": [],
@@ -669,14 +669,14 @@ def publish(annual, grids, states, summary):
                 "markerSize": 8,
                 "show_value": True,
                 "y_axis_format": ",.1f",
-                "y_axis_title": "Rayos (millones)",
+                "y_axis_title": "Strikes (millions)",
                 "y_axis_title_margin": 50,
                 "color_scheme": "supersetColors",
                 "rich_tooltip": True,
             },
         },
         {
-            "slice_name": "Dónde aumentaron los rayos",
+            "slice_name": "Where the strikes increased",
             "viz_type": "echarts_timeseries_line",
             "datasource_id": annual_id,
             "params": {
@@ -686,11 +686,11 @@ def publish(annual, grids, states, summary):
                 "x_axis_sort": "year_label",
                 "x_axis_sort_asc": True,
                 "metrics": [
-                    metric("east_millions", "Costa este"),
-                    metric("gap_millions", "Interior este"),
-                    metric("central_millions", "Centro"),
-                    metric("west_millions", "Oeste"),
-                    metric("outside_millions", "Fuera del continente"),
+                    metric("east_millions", "East Coast"),
+                    metric("gap_millions", "East interior"),
+                    metric("central_millions", "Central"),
+                    metric("west_millions", "West"),
+                    metric("outside_millions", "Outside the continent"),
                 ],
                 "groupby": [],
                 "adhoc_filters": [],
@@ -700,14 +700,14 @@ def publish(annual, grids, states, summary):
                 "markerEnabled": True,
                 "markerSize": 7,
                 "y_axis_format": ",.1f",
-                "y_axis_title": "Rayos (millones)",
+                "y_axis_title": "Strikes (millions)",
                 "y_axis_title_margin": 50,
                 "color_scheme": "supersetColors",
                 "rich_tooltip": True,
             },
         },
         {
-            "slice_name": "Parte regional dentro del continente",
+            "slice_name": "Regional share inside the continent",
             "viz_type": "echarts_timeseries_line",
             "datasource_id": annual_id,
             "params": {
@@ -717,10 +717,10 @@ def publish(annual, grids, states, summary):
                 "x_axis_sort": "year_label",
                 "x_axis_sort_asc": True,
                 "metrics": [
-                    metric("east_share", "Costa este"),
-                    metric("gap_share", "Interior este"),
-                    metric("central_share", "Centro"),
-                    metric("west_share", "Oeste"),
+                    metric("east_share", "East Coast"),
+                    metric("gap_share", "East interior"),
+                    metric("central_share", "Central"),
+                    metric("west_share", "West"),
                 ],
                 "groupby": [],
                 "adhoc_filters": [],
@@ -730,14 +730,14 @@ def publish(annual, grids, states, summary):
                 "markerEnabled": True,
                 "markerSize": 7,
                 "y_axis_format": ",.0%",
-                "y_axis_title": "Parte del total",
+                "y_axis_title": "Share of the total",
                 "y_axis_title_margin": 50,
                 "color_scheme": "supersetColors",
                 "rich_tooltip": True,
             },
         },
         {
-            "slice_name": "Centro de masa de los rayos",
+            "slice_name": "Center of mass of the strikes",
             "viz_type": "echarts_timeseries_line",
             "datasource_id": annual_id,
             "params": {
@@ -746,7 +746,7 @@ def publish(annual, grids, states, summary):
                 "x_axis": "year_label",
                 "x_axis_sort": "year_label",
                 "x_axis_sort_asc": True,
-                "metrics": [metric("centroid_lon", "Longitud del centro de masa")],
+                "metrics": [metric("centroid_lon", "Center-of-mass longitude")],
                 "groupby": [],
                 "adhoc_filters": [],
                 "row_limit": 20,
@@ -754,13 +754,13 @@ def publish(annual, grids, states, summary):
                 "markerEnabled": True,
                 "markerSize": 8,
                 "y_axis_format": ",.2f",
-                "y_axis_title": "Longitud (más negativo = más al oeste)",
+                "y_axis_title": "Longitude (more negative = farther west)",
                 "y_axis_title_margin": 60,
                 "rich_tooltip": True,
             },
         },
-        heatmap(grid_id, "Rayos en 2009", [year_filter(2009)]),
-        heatmap(grid_id, "Rayos en 2018", [year_filter(2018)]),
+        heatmap(grid_id, "Strikes in 2009", [year_filter(2009)]),
+        heatmap(grid_id, "Strikes in 2018", [year_filter(2018)]),
         heatmap(state_id, "Texas 2018", [state_filter("Texas")]),
         heatmap(state_id, "Oklahoma 2018", [state_filter("Oklahoma")]),
         heatmap(state_id, "Kansas 2018", [state_filter("Kansas")]),
@@ -802,46 +802,46 @@ def publish(annual, grids, states, summary):
         f"{item['state']} {item['within_150km'] * 100:.0f}%" for item in summary["cities"]
     )
     intro = (
-        f"El archivo tiene **{summary['rows']:,} filas** y solo cuatro años completos, de enero a diciembre: "
-        "**2009, 2012, 2015 y 2018**. Los otros seis años del título no están. No se dibujan como cero.\n\n"
-        f"**{start:.1f} millones en 2009 y {end:.1f} millones en 2018** (+{change_all:.0f}%). "
-        "El video anota 30.1M y 45M, y un aumento del 50%. "
-        "Ese 50% es el redondeo de estos dos extremos, sumando todas las filas. "
-        f"2012 quedó en {dip['all_millions']:.1f} millones, por debajo de 2009: no es una subida continua.\n\n"
-        f"En el recorte continental (latitud 24.5 a 49.5, longitud −125 a −66.5) el paso es de "
-        f"**{summary['start_conus']:.1f}M a {summary['end_conus']:.1f}M** (+{change_conus:.0f}%). "
-        f"Fuera de ese recorte, de {summary['start_outside']:.1f}M a {summary['end_outside']:.1f}M."
+        f"The file has **{summary['rows']:,} rows** and only four complete years, January through December: "
+        "**2009, 2012, 2015, and 2018**. The other six years in the title are missing. They are not drawn as zero.\n\n"
+        f"**{start:.1f} million in 2009 and {end:.1f} million in 2018** (+{change_all:.0f}%). "
+        "The video notes 30.1M and 45M, and a 50% increase. "
+        "That 50% is the rounding of these two endpoints, summing every row. "
+        f"2012 was {dip['all_millions']:.1f} million, below 2009: the rise is not continuous.\n\n"
+        f"Inside the continental cut (latitude 24.5 to 49.5, longitude −125 to −66.5) the change is "
+        f"**{summary['start_conus']:.1f}M to {summary['end_conus']:.1f}M** (+{change_conus:.0f}%). "
+        f"Outside that cut, from {summary['start_outside']:.1f}M to {summary['end_outside']:.1f}M."
     )
     page1 = (
         "**Lightning strikes in the U.S. have increased 50% over the last decade.**\n\n"
-        f"En todo el archivo: {start:.1f}M → {end:.1f}M (+{change_all:.0f}%). "
-        f"En el continente: {summary['start_conus']:.1f}M → {summary['end_conus']:.1f}M (+{change_conus:.0f}%). "
-        "Faltan 2010, 2011, 2013, 2014, 2016 y 2017."
+        f"Entire file: {start:.1f}M → {end:.1f}M (+{change_all:.0f}%). "
+        f"Continental U.S.: {summary['start_conus']:.1f}M → {summary['end_conus']:.1f}M (+{change_conus:.0f}%). "
+        "2010, 2011, 2013, 2014, 2016, and 2017 are missing."
     )
     page2 = (
         "**Lightning strikes have moved from the East Coast to the Central Mainlands over the last decade.**\n\n"
-        "No se mudaron. Dentro del continente, la costa este (longitud ≥ −83) pasó de "
-        f"{summary['east_2009'] * 100:.0f}% a {summary['east_2018'] * 100:.0f}% "
-        f"y el centro (−103 a −90) de {summary['central_2009'] * 100:.0f}% a {summary['central_2018'] * 100:.0f}%. "
-        f"En millones, la costa este subió de {summary['east_m_2009']:.1f} a {summary['east_m_2018']:.1f} "
-        f"y el centro de {summary['central_m_2009']:.1f} a {summary['central_m_2018']:.1f}. "
-        f"El centro de masa se movió {summary['centroid_km']:.0f} km "
-        f"(de {summary['centroid_2009'][0]:.2f}, {summary['centroid_2009'][1]:.2f} "
-        f"a {summary['centroid_2018'][0]:.2f}, {summary['centroid_2018'][1]:.2f}). "
-        "Las dos regiones ganaron rayos. Cambió la intensidad, no el mapa.\n\n"
-        f"Lo que sí cambió de lugar es el registro fuera del recorte: en 2018 hay "
-        f"{last_row['south_millions']:.1f}M al sur de 24.5°, {last_row['north_millions']:.1f}M al norte de 49.5°, "
-        f"{last_row['atlantic_millions']:.1f}M en el Atlántico y {last_row['pacific_millions']:.1f}M en el Pacífico "
-        f"(en 2009: {first_row['south_millions']:.1f}M, {first_row['north_millions']:.1f}M, "
-        f"{first_row['atlantic_millions']:.1f}M y {first_row['pacific_millions']:.1f}M)."
+        "They did not move. Inside the continent, the East Coast (longitude ≥ −83) went from "
+        f"{summary['east_2009'] * 100:.0f}% to {summary['east_2018'] * 100:.0f}% "
+        f"and the center (−103 to −90) from {summary['central_2009'] * 100:.0f}% to {summary['central_2018'] * 100:.0f}%. "
+        f"In millions, the East Coast rose from {summary['east_m_2009']:.1f} to {summary['east_m_2018']:.1f} "
+        f"and the center from {summary['central_m_2009']:.1f} to {summary['central_m_2018']:.1f}. "
+        f"The center of mass moved {summary['centroid_km']:.0f} km "
+        f"(from {summary['centroid_2009'][0]:.2f}, {summary['centroid_2009'][1]:.2f} "
+        f"to {summary['centroid_2018'][0]:.2f}, {summary['centroid_2018'][1]:.2f}). "
+        "Both regions gained strikes. The intensity changed, not the map.\n\n"
+        f"What did change place is the record outside the cut: in 2018 there are "
+        f"{last_row['south_millions']:.1f}M south of 24.5°, {last_row['north_millions']:.1f}M north of 49.5°, "
+        f"{last_row['atlantic_millions']:.1f}M in the Atlantic and {last_row['pacific_millions']:.1f}M in the Pacific "
+        f"(in 2009: {first_row['south_millions']:.1f}M, {first_row['north_millions']:.1f}M, "
+        f"{first_row['atlantic_millions']:.1f}M and {first_row['pacific_millions']:.1f}M)."
     )
     page3 = (
         "**Most number of lightning strikes in 2018 happened in densely populated household areas.**\n\n"
-        "El archivo no trae hogares ni población, así que esa frase no se puede comprobar aquí. "
-        f"Como referencia externa, en 2018 la parte de los rayos a menos de 80 km de una ciudad grande es {near_80}. "
-        f"A menos de 150 km: {near_150}. En Texas la mayoría queda más lejos de 150 km. "
-        "El color va de dorado a rojo según los rayos de cada celda de 0.2°. "
-        "Una red de detección también puede registrar más rayos donde hay más sensores."
+        "The file has no households or population, so that sentence cannot be checked from it alone. "
+        f"As an external reference, the 2018 share of strikes within 80 km of a large city is {near_80}. "
+        f"Within 150 km: {near_150}. In Texas most strikes are farther than 150 km. "
+        "Color runs from gold to red with the strikes in each 0.2° cell. "
+        "A detection network can also record more strikes where there are more sensors."
     )
 
     def markdown(row_id, code, height):
@@ -924,21 +924,21 @@ def publish(annual, grids, states, summary):
         },
         "color_scheme": "supersetColors",
         "label_colors": {
-            "Todo el archivo": "#b30000",
-            "Continente": "#4C78A8",
-            "Costa este": "#4C78A8",
-            "Interior este": "#72B7B2",
-            "Centro": "#E45756",
-            "Oeste": "#F58518",
-            "Fuera del continente": "#B279A2",
-            "Longitud del centro de masa": "#54A24B",
+            "Entire file": "#b30000",
+            "Continental U.S.": "#4C78A8",
+            "East Coast": "#4C78A8",
+            "East interior": "#72B7B2",
+            "Central": "#E45756",
+            "West": "#F58518",
+            "Outside the continent": "#B279A2",
+            "Center-of-mass longitude": "#54A24B",
         },
         "shared_label_colors": [
-            "Costa este",
-            "Interior este",
-            "Centro",
-            "Oeste",
-            "Fuera del continente",
+            "East Coast",
+            "East interior",
+            "Central",
+            "West",
+            "Outside the continent",
         ],
         "map_label_colors": {},
         "cross_filters_enabled": False,

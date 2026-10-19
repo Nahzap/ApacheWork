@@ -2,8 +2,8 @@
 
 `render` draws the 2009-2018 study from the summaries already on disk.
 `render_tableau` draws the five charts of
-"Lightning strikes: ejercicios de Tableau". `render_historia` draws the
-charts of "Historia: rayos en Estados Unidos, 2009-2018", including the
+"Lightning strikes: Tableau exercises". `render_historia` draws the
+charts of "Lightning history: United States, 2009-2018", including the
 county maps and Texas, Oklahoma and Kansas. None of these paths reread
 the 12 million-row file or rewrite a Superset dashboard.
 """
@@ -22,7 +22,7 @@ from matplotlib.colors import LogNorm
 
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "outputs"
-PNG = OUT / "ejercicio_1_oficial.png"
+PNG = OUT / "summary_2009_2018.png"
 
 INK = "#1c1c1c"
 MUTED = "#5e5e5e"
@@ -35,16 +35,16 @@ GREEN = "#54A24B"
 PURPLE = "#B279A2"
 
 REGIONS = (
-    ("east_millions", "Costa este", ORANGE),
-    ("central_millions", "Centro", BLUE),
-    ("west_millions", "Oeste", GREEN),
-    ("outside_millions", "Fuera del continente", PURPLE),
+    ("east_millions", "East Coast", ORANGE),
+    ("central_millions", "Central", BLUE),
+    ("west_millions", "West", GREEN),
+    ("outside_millions", "Outside the continent", PURPLE),
 )
 SHARES = (
-    ("east_share", "Costa este", ORANGE),
-    ("central_share", "Centro", BLUE),
-    ("west_share", "Oeste", GREEN),
-    ("gap_share", "Interior este", "#9c755f"),
+    ("east_share", "East Coast", ORANGE),
+    ("central_share", "Central", BLUE),
+    ("west_share", "West", GREEN),
+    ("gap_share", "East interior", "#9c755f"),
 )
 
 
@@ -64,15 +64,15 @@ def panel_title(ax, text):
 
 
 def draw_annual(ax, annual):
-    ax.plot(annual["year"], annual["all_millions"], color=RED, marker="o", linewidth=2.2, label="Todo el archivo", zorder=3)
-    ax.plot(annual["year"], annual["conus_millions"], color=BLUE, marker="o", linewidth=2.2, label="Continente", zorder=3)
+    ax.plot(annual["year"], annual["all_millions"], color=RED, marker="o", linewidth=2.2, label="Entire file", zorder=3)
+    ax.plot(annual["year"], annual["conus_millions"], color=BLUE, marker="o", linewidth=2.2, label="Continental U.S.", zorder=3)
     ax.set_ylim(0, annual["all_millions"].max() * 1.25)
     ax.set_xticks(list(annual["year"]))
-    ax.set_ylabel("Millones", color=MUTED, fontsize=9)
+    ax.set_ylabel("Millions", color=MUTED, fontsize=9)
     for _, row in annual.iterrows():
         ax.text(row["year"], row["all_millions"] + 1.1, f"{row['all_millions']:.1f}", ha="center", fontsize=8, color=INK)
     style_axis(ax)
-    panel_title(ax, "Rayos por año")
+    panel_title(ax, "Strikes by year")
     ax.legend(frameon=False, fontsize=8, labelcolor=INK, loc="upper left")
 
 
@@ -81,9 +81,9 @@ def draw_regions(ax, annual):
         ax.plot(annual["year"], annual[column], color=color, marker="o", linewidth=2, label=name, zorder=3)
     ax.set_ylim(0, annual["central_millions"].max() * 1.35)
     ax.set_xticks(list(annual["year"]))
-    ax.set_ylabel("Millones", color=MUTED, fontsize=9)
+    ax.set_ylabel("Millions", color=MUTED, fontsize=9)
     style_axis(ax)
-    panel_title(ax, "Millones por región")
+    panel_title(ax, "Millions by region")
     ax.legend(frameon=False, fontsize=8, labelcolor=INK, loc="upper left", ncol=2)
 
 
@@ -92,9 +92,9 @@ def draw_shares(ax, annual):
         ax.plot(annual["year"], annual[column] * 100, color=color, marker="o", linewidth=2, label=name, zorder=3)
     ax.set_ylim(0, 60)
     ax.set_xticks(list(annual["year"]))
-    ax.set_ylabel("Parte del continente (%)", color=MUTED, fontsize=9)
+    ax.set_ylabel("Share of the continent (%)", color=MUTED, fontsize=9)
     style_axis(ax)
-    panel_title(ax, "Parte regional")
+    panel_title(ax, "Regional share")
     ax.legend(frameon=False, fontsize=8, labelcolor=INK, loc="upper right")
 
 
@@ -104,16 +104,16 @@ def draw_centroid(ax, annual):
     low = annual["centroid_lon"].min() - 0.6
     high = annual["centroid_lon"].max() + 0.6
     ax.set_ylim(low, high)
-    ax.set_ylabel("Longitud", color=MUTED, fontsize=9)
+    ax.set_ylabel("Longitude", color=MUTED, fontsize=9)
     for _, row in annual.iterrows():
         ax.text(row["year"], row["centroid_lon"] - 0.18, f"{row['centroid_lon']:.2f}", ha="center", fontsize=8, color=INK)
     style_axis(ax)
-    panel_title(ax, "Centro de masa, 62 km al oeste")
+    panel_title(ax, "Center of mass, 62 km west")
 
 
 def draw_households(ax, quartiles):
-    scopes = ["Condados de EE.UU.", "Tractos de Texas, Oklahoma y Kansas"]
-    labels = ["Q1\nmenos denso", "Q2", "Q3", "Q4\nmás denso"]
+    scopes = ["U.S. counties", "Tracts in Texas, Oklahoma, and Kansas"]
+    labels = ["Q1\nleast dense", "Q2", "Q3", "Q4\nmost dense"]
     width = 0.18
     colors = (ORANGE, "#f2c39a", BLUE, "#a8c4e0")
     for index, scope in enumerate(scopes):
@@ -126,7 +126,7 @@ def draw_households(ax, quartiles):
             part["household_share"] * 100,
             width=width,
             color=colors[index * 2],
-            label=f"Hogares · {scope.split(' de ')[0]}",
+            label=f"Households · {'Counties' if scope == 'U.S. counties' else 'Tracts'}",
             zorder=3,
         )
         ax.bar(
@@ -134,15 +134,15 @@ def draw_households(ax, quartiles):
             part["strike_share"] * 100,
             width=width,
             color=colors[index * 2 + 1],
-            label=f"Rayos · {scope.split(' de ')[0]}",
+            label=f"Strikes · {'Counties' if scope == 'U.S. counties' else 'Tracts'}",
             zorder=3,
         )
     ax.set_xticks(range(4))
     ax.set_xticklabels(labels, fontsize=8)
     ax.set_ylim(0, 100)
-    ax.set_ylabel("Parte del total (%)", color=MUTED, fontsize=9)
+    ax.set_ylabel("Share of the total (%)", color=MUTED, fontsize=9)
     style_axis(ax)
-    panel_title(ax, "Los hogares densos no concentran los rayos")
+    panel_title(ax, "Dense households do not collect the strikes")
     ax.legend(frameon=False, fontsize=8, labelcolor=INK, ncol=4, loc="upper left")
 
 
@@ -168,7 +168,7 @@ def render(path=PNG):
     start = float(annual.iloc[0]["all_millions"])
     end = float(annual.iloc[-1]["all_millions"])
     figure.suptitle(
-        "Rayos en Estados Unidos, 2009-2018",
+        "Lightning in the United States, 2009-2018",
         fontsize=18,
         color=INK,
         x=0.055,
@@ -178,9 +178,9 @@ def render(path=PNG):
     figure.text(
         0.055,
         0.935,
-        f"El archivo pasa de {start:.1f} M a {end:.1f} M (+{(end / start - 1):.0%}). "
-        "2012 queda por debajo de 2009. El centro no le gana terreno a la costa en porcentaje, "
-        "y el cuartil más denso de hogares no se queda con los rayos.",
+        f"The file goes from {start:.1f}M to {end:.1f}M (+{(end / start - 1):.0%}). "
+        "2012 stays below 2009. The center does not gain share from the coast, "
+        "and the densest household quartile does not collect the strikes.",
         fontsize=10,
         color=MUTED,
         ha="left",
@@ -194,7 +194,7 @@ def render(path=PNG):
 
 
 TABLEAU_PNG = OUT / "lightning_tableau.png"
-TABLEAU_TITLE = "Lightning strikes: ejercicios de Tableau"
+TABLEAU_TITLE = "Lightning strikes: Tableau exercises"
 MARK_BREAKS = (
     (40, 108, "#B71C1C"),
     (32, 39, "#E53935"),
@@ -277,8 +277,8 @@ def draw_usa(ax, points):
     )
     ax.set_xlim(-128, -66)
     ax.set_ylim(23, 50)
-    panel_title(ax, "Rayos en 2018")
-    ax.set_xlabel("Todo el país. El calor es la suma de rayos de cada celda.", color=MUTED, fontsize=8)
+    panel_title(ax, "Strikes in 2018")
+    ax.set_xlabel("The whole country. Color is the sum of strikes in each cell.", color=MUTED, fontsize=8)
 
 
 def draw_marks(ax, cloud):
@@ -293,8 +293,8 @@ def draw_marks(ax, cloud):
     )
     ax.set_xlim(-128, -66)
     ax.set_ylim(23, 50)
-    panel_title(ax, "Lugar y percentil")
-    ax.set_xlabel("Azul: 1 a 2 rayos. Rojo: 40 a 108.", color=MUTED, fontsize=8)
+    panel_title(ax, "Place and count")
+    ax.set_xlabel("Blue: 1 to 2 strikes. Red: 40 to 108.", color=MUTED, fontsize=8)
 
 
 def draw_month_heat(ax, heat):
@@ -314,7 +314,7 @@ def draw_month_heat(ax, heat):
     for spine in ax.spines.values():
         spine.set_visible(False)
     ax.figure.colorbar(image, ax=ax, fraction=0.02, pad=0.02).outline.set_visible(False)
-    panel_title(ax, "Strikes por mes y año")
+    panel_title(ax, "Strikes by month and year")
 
 
 def draw_box(ax, daily):
@@ -327,9 +327,9 @@ def draw_box(ax, daily):
         box.set_edgecolor(BLUE)
     ax.set_ylim(0, None)
     ax.tick_params(axis="x", labelrotation=45)
-    ax.set_ylabel("Rayos por día", color=MUTED, fontsize=9)
+    ax.set_ylabel("Strikes per day", color=MUTED, fontsize=9)
     style_axis(ax)
-    panel_title(ax, "Caja por trimestre")
+    panel_title(ax, "Daily strikes by quarter")
 
 
 def draw_bins(ax, bins):
@@ -338,10 +338,10 @@ def draw_bins(ax, bins):
     ax.set_xticks(range(len(ordered)))
     ax.set_xticklabels(ordered["bin_label"], rotation=60, ha="right", fontsize=7)
     ax.set_ylim(0, ordered["locations"].max() * 1.08)
-    ax.set_ylabel("Lugares", color=MUTED, fontsize=9)
-    ax.set_xlabel("Rayos, de 10 en 10, entre 1 y 200", color=MUTED, fontsize=8)
+    ax.set_ylabel("Locations", color=MUTED, fontsize=9)
+    ax.set_xlabel("Strikes, bins of 10, from 1 to 200", color=MUTED, fontsize=8)
     style_axis(ax)
-    panel_title(ax, "Histograma")
+    panel_title(ax, "Histogram")
 
 
 def render_tableau(path=TABLEAU_PNG):
@@ -363,8 +363,8 @@ def render_tableau(path=TABLEAU_PNG):
     figure.text(
         0.055,
         0.935,
-        "Todo Estados Unidos en 2018, el mismo mapa con el color según la cantidad, "
-        "el calor de strikes por mes y año, la caja diaria por trimestre y el histograma de 1 a 200.",
+        "The whole United States in 2018, the same map colored by strike count, "
+        "strikes by month and year, daily strikes by quarter, and the histogram from 1 to 200.",
         fontsize=10,
         color=MUTED,
         ha="left",
@@ -377,20 +377,20 @@ def render_tableau(path=TABLEAU_PNG):
     return path
 
 
-HISTORIA_PNG = OUT / "historia_rayos.png"
-HISTORIA_TITLE = "Historia: rayos en Estados Unidos, 2009-2018"
+HISTORIA_PNG = OUT / "lightning_history.png"
+HISTORIA_TITLE = "Lightning history: United States, 2009-2018"
 WHERE = (
-    ("east_millions", "Costa este", ORANGE),
-    ("gap_millions", "Interior este", "#9c755f"),
-    ("central_millions", "Centro", BLUE),
-    ("west_millions", "Oeste", GREEN),
-    ("outside_millions", "Fuera del continente", PURPLE),
+    ("east_millions", "East Coast", ORANGE),
+    ("gap_millions", "East interior", "#9c755f"),
+    ("central_millions", "Central", BLUE),
+    ("west_millions", "West", GREEN),
+    ("outside_millions", "Outside the continent", PURPLE),
 )
 SHARE_ORDER = (
-    ("east_share", "Costa este", ORANGE),
-    ("gap_share", "Interior este", "#9c755f"),
-    ("central_share", "Centro", BLUE),
-    ("west_share", "Oeste", GREEN),
+    ("east_share", "East Coast", ORANGE),
+    ("gap_share", "East interior", "#9c755f"),
+    ("central_share", "Central", BLUE),
+    ("west_share", "West", GREEN),
 )
 
 
@@ -454,9 +454,9 @@ def draw_where(ax, annual):
         ax.plot(annual["year"], annual[column], color=color, marker="o", linewidth=2, label=name, zorder=3)
     ax.set_ylim(0, annual["central_millions"].max() * 1.45)
     ax.set_xticks(list(annual["year"]))
-    ax.set_ylabel("Millones", color=MUTED, fontsize=9)
+    ax.set_ylabel("Millions", color=MUTED, fontsize=9)
     style_axis(ax)
-    panel_title(ax, "Dónde aumentaron los rayos")
+    panel_title(ax, "Where the strikes increased")
     ax.legend(frameon=False, fontsize=7, labelcolor=INK, loc="upper left", ncol=2)
 
 
@@ -465,9 +465,9 @@ def draw_share_lines(ax, annual):
         ax.plot(annual["year"], annual[column] * 100, color=color, marker="o", linewidth=2, label=name, zorder=3)
     ax.set_ylim(0, 60)
     ax.set_xticks(list(annual["year"]))
-    ax.set_ylabel("Parte del continente (%)", color=MUTED, fontsize=9)
+    ax.set_ylabel("Share of the continent (%)", color=MUTED, fontsize=9)
     style_axis(ax)
-    panel_title(ax, "Parte regional dentro del continente")
+    panel_title(ax, "Regional share inside the continent")
     ax.legend(frameon=False, fontsize=7, labelcolor=INK, loc="upper right")
 
 
@@ -477,13 +477,13 @@ def draw_quartile_bars(ax, frame, title):
     part = part.sort_values("order")
     positions = np.arange(len(part))
     width = 0.24
-    ax.bar(positions - width, part["strike_share"] * 100, width=width, color=ORANGE, label="Rayos", zorder=3)
-    ax.bar(positions, part["area_share"] * 100, width=width, color=BLUE, label="Territorio", zorder=3)
-    ax.bar(positions + width, part["household_share"] * 100, width=width, color=GREEN, label="Hogares", zorder=3)
+    ax.bar(positions - width, part["strike_share"] * 100, width=width, color=ORANGE, label="Strikes", zorder=3)
+    ax.bar(positions, part["area_share"] * 100, width=width, color=BLUE, label="Land", zorder=3)
+    ax.bar(positions + width, part["household_share"] * 100, width=width, color=GREEN, label="Households", zorder=3)
     ax.set_xticks(positions)
-    ax.set_xticklabels(["Q1\nmenos denso", "Q2", "Q3", "Q4\nmás denso"], fontsize=8)
+    ax.set_xticklabels(["Q1\nleast dense", "Q2", "Q3", "Q4\nmost dense"], fontsize=8)
     ax.set_ylim(0, 100)
-    ax.set_ylabel("Parte del total (%)", color=MUTED, fontsize=9)
+    ax.set_ylabel("Share of the total (%)", color=MUTED, fontsize=9)
     style_axis(ax)
     ax.set_title(title, loc="left", fontsize=13, color=INK, pad=34, fontweight="medium")
     ax.legend(
@@ -521,30 +521,30 @@ def render_historia(path=HISTORIA_PNG):
     draw_share_lines(figure.add_subplot(grid[1, 0:3]), annual)
     centroid = figure.add_subplot(grid[1, 3:6])
     draw_centroid(centroid, annual)
-    panel_title(centroid, "Centro de masa de los rayos")
-    choropleth(figure.add_subplot(grid[2, 0:2]), counties, "strikes_2009", "Rayos en 2009 sobre el territorio", strikes, country)
-    choropleth(figure.add_subplot(grid[2, 2:4]), counties, "strikes", "Territorio: rayos por condado en 2018", strikes, country)
-    choropleth(figure.add_subplot(grid[2, 4:6]), counties, "household_density", "Territorio: hogares por km² en 2018", density, country)
+    panel_title(centroid, "Center of mass of the strikes")
+    choropleth(figure.add_subplot(grid[2, 0:2]), counties, "strikes_2009", "2009 strikes on the territory", strikes, country)
+    choropleth(figure.add_subplot(grid[2, 2:4]), counties, "strikes", "2018 strikes by county", strikes, country)
+    choropleth(figure.add_subplot(grid[2, 4:6]), counties, "household_density", "2018 households per km²", density, country)
     for index, name in enumerate(("Texas", "Oklahoma", "Kansas")):
         part = tracts[tracts["state"] == name]
         axis = figure.add_subplot(grid[3, index * 2 : index * 2 + 2])
         positive = part.loc[part["strikes"] > 0, "strikes"]
         norm = LogNorm(vmin=1, vmax=max(float(np.percentile(positive, 98)), 2))
-        choropleth(axis, part, "strikes", f"{name} 2018 sobre el territorio", norm, None)
-        axis.set_xlabel(f"{part['strikes'].sum() / 1_000_000:.1f} millones de rayos", color=MUTED, fontsize=8)
-    counties_q = quartiles[quartiles["scope"] == "Condados de EE.UU."]
-    tracts_q = quartiles[quartiles["scope"] == "Tractos de Texas, Oklahoma y Kansas"]
-    draw_quartile_bars(figure.add_subplot(grid[4, 0:3]), counties_q, "Rayos por cuartil de hogares, condados")
-    draw_quartile_bars(figure.add_subplot(grid[4, 3:6]), tracts_q, "Rayos por cuartil de hogares, tres estados")
+        choropleth(axis, part, "strikes", f"{name} 2018 on the territory", norm, None)
+        axis.set_xlabel(f"{part['strikes'].sum() / 1_000_000:.1f} million strikes", color=MUTED, fontsize=8)
+    counties_q = quartiles[quartiles["scope"] == "U.S. counties"]
+    tracts_q = quartiles[quartiles["scope"] == "Tracts in Texas, Oklahoma, and Kansas"]
+    draw_quartile_bars(figure.add_subplot(grid[4, 0:3]), counties_q, "Strike share by household quartile, counties")
+    draw_quartile_bars(figure.add_subplot(grid[4, 3:6]), tracts_q, "Strike share by household quartile, three states")
     start = float(annual.iloc[0]["all_millions"])
     end = float(annual.iloc[-1]["all_millions"])
     figure.suptitle(HISTORIA_TITLE, fontsize=18, color=INK, x=0.04, ha="left", fontweight="medium")
     figure.text(
         0.04,
         0.965,
-        f"El archivo pasa de {start:.1f} a {end:.1f} millones. "
-        "2009 y 2018 comparten la escala de los condados. "
-        "Texas, Oklahoma y Kansas se ven por tracto.",
+        f"The file goes from {start:.1f} to {end:.1f} million strikes. "
+        "2009 and 2018 share the county color scale. "
+        "Texas, Oklahoma, and Kansas are drawn by tract.",
         fontsize=10,
         color=MUTED,
         ha="left",

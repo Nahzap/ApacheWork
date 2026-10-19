@@ -22,12 +22,12 @@ CSV_SRC = Path(os.environ.get(
 ))
 WORK = ROOT / "outputs"
 OPENER = urllib.request.build_opener(urllib.request.HTTPCookieProcessor())
-DASHBOARD_TITLE = "Seoul: horarios de mantenimiento de bicicletas (2018)"
+DASHBOARD_TITLE = "Seoul: weekday bike-maintenance hours (2018)"
 BAR_TITLE = "Seoul Average Bike Rentals per Hour on Weekdays in 2018"
 SEASON_TITLE = "Seasonal Seoul Average Bike Rentals per Hour on Weekdays in 2018"
-HOUR_TITLE = "Hora a hora: días hábiles de 2018"
-WEEK_TITLE = "Semana a semana: 8 a.m., 10 a.m. y 5 p.m."
-DAY_TITLE = "Jornada a jornada: 8 a.m., 10 a.m. y 5 p.m."
+HOUR_TITLE = "Hour by hour: weekdays in 2018"
+WEEK_TITLE = "Week by week: 8 a.m., 10 a.m., and 5 p.m."
+DAY_TITLE = "Day by day: 8 a.m., 10 a.m., and 5 p.m."
 
 SEASON_LABEL = {
     "Winter": "1 · Winter",
@@ -42,19 +42,19 @@ WEEKDAY_COLUMN = {
     "Thursday": "thursday",
     "Friday": "friday",
 }
-WEEKDAY_ES = {
-    "Monday": "lunes",
-    "Tuesday": "martes",
-    "Wednesday": "miércoles",
-    "Thursday": "jueves",
-    "Friday": "viernes",
+WEEKDAY_LABEL = {
+    "Monday": "Monday",
+    "Tuesday": "Tuesday",
+    "Wednesday": "Wednesday",
+    "Thursday": "Thursday",
+    "Friday": "Friday",
 }
 SERIES_COLORS = {
-    "Lunes": "#4C78A8",
-    "Martes": "#F58518",
-    "Miércoles": "#54A24B",
-    "Jueves": "#E45756",
-    "Viernes": "#B279A2",
+    "Monday": "#4C78A8",
+    "Tuesday": "#F58518",
+    "Wednesday": "#54A24B",
+    "Thursday": "#E45756",
+    "Friday": "#B279A2",
     "8 a.m.": "#F58518",
     "10 a.m.": "#4C78A8",
     "5 p.m.": "#E45756",
@@ -191,12 +191,12 @@ def main():
         .reset_index()
         .sort_values("rental_date")
     )
-    day_hours["jornada"] = (
+    day_hours["workday"] = (
         day_hours["rental_date"].dt.strftime("%Y-%m-%d")
         + " · "
-        + day_hours["weekday_name"].map(WEEKDAY_ES)
+        + day_hours["weekday_name"].map(WEEKDAY_LABEL)
     )
-    day_hours = day_hours[["jornada", "bikes_8am", "bikes_10am", "bikes_5pm"]]
+    day_hours = day_hours[["workday", "bikes_8am", "bikes_10am", "bikes_5pm"]]
 
     per_day = work_window.pivot(index="rental_date", columns="hour", values="rented_bike_count")
     day_min = per_day.idxmin(axis=1)
@@ -247,7 +247,7 @@ def main():
     load_frame(
         day_hours,
         "seoul_prep_day",
-        "jornada text NOT NULL, bikes_8am double precision NOT NULL, bikes_10am double precision NOT NULL, "
+        "workday text NOT NULL, bikes_8am double precision NOT NULL, bikes_10am double precision NOT NULL, "
         "bikes_5pm double precision NOT NULL",
     )
 
@@ -413,17 +413,17 @@ def main():
                 dataset_ids["seoul_prep_hour_weekday"],
                 "hour",
                 [
-                    metric("monday", "Lunes"),
-                    metric("tuesday", "Martes"),
-                    metric("wednesday", "Miércoles"),
-                    metric("thursday", "Jueves"),
-                    metric("friday", "Viernes"),
+                    metric("monday", "Monday"),
+                    metric("tuesday", "Tuesday"),
+                    metric("wednesday", "Wednesday"),
+                    metric("thursday", "Thursday"),
+                    metric("friday", "Friday"),
                 ],
-                "Promedio de bicicletas",
+                "Average bikes",
                 rotation=0,
                 markers=True,
             ),
-            "Cada punto es el promedio de esa hora en ese día de la semana. Python calculó el promedio sobre los días hábiles de 2018, de 0 a 23.",
+            "Each point is the average of that hour on that weekday. Python computed the average over weekdays in 2018, from 0 to 23.",
         ),
         (
             WEEK_TITLE,
@@ -437,12 +437,12 @@ def main():
                     metric("avg_10am", "10 a.m."),
                     metric("avg_5pm", "5 p.m."),
                 ],
-                "Promedio de bicicletas",
+                "Average bikes",
                 rotation=45,
                 markers=True,
                 zoomable=True,
             ),
-            "Cada punto es el promedio de esa hora en la semana ISO. Las tres series salen de la tabla preparada en Python.",
+            "Each point is the average of that hour in the ISO week. The three series come from the table prepared in Python.",
         ),
         (
             DAY_TITLE,
@@ -450,18 +450,18 @@ def main():
             "seoul_prep_day",
             line_params(
                 dataset_ids["seoul_prep_day"],
-                "jornada",
+                "workday",
                 [
                     metric("bikes_8am", "8 a.m."),
                     metric("bikes_10am", "10 a.m."),
                     metric("bikes_5pm", "5 p.m."),
                 ],
-                "Bicicletas alquiladas",
+                "Rented bikes",
                 rotation=0,
                 markers=False,
                 zoomable=True,
             ),
-            "Cada punto es una jornada hábil de 2018. El valor es el alquiler de esa hora, sin promediar el día.",
+            "Each point is one weekday in 2018. The value is that hour's rentals, not a daily average.",
         ),
     ]
 
@@ -491,15 +491,15 @@ def main():
 
     intro = (
         "**Lowest bicycle traffic times: 9 a.m. to 3 p.m.**\n\n"
-        "Los promedios se calcularon en Python sobre los días hábiles de 2018. "
-        "Superset solo dibuja esas tablas.\n\n"
-        "Dentro de 8 a.m. a 5 p.m., el promedio más bajo sigue siendo **10 a.m.** "
-        f"({lowest_hour:,.0f} bicicletas; a las 8 a.m. el promedio sube a {peak_hour:,.0f}). "
-        f"Eso no es todas las jornadas: las 10 a.m. son la hora más baja del horario laboral "
-        f"en **{n_days_10} de {n_days} días** y en **{n_weeks_10} de {n_weeks} semanas**. "
-        f"En {n_days_8} jornadas el mínimo fue las 8 a.m.\n\n"
-        "Las líneas de abajo bajan al detalle: hora por hora (de 0 a 23, una línea por día de la semana), "
-        "semana por semana y jornada por jornada. En esos dos últimos gráficos, la línea azul es las 10 a.m."
+        "The averages were computed in Python over weekdays in 2018. "
+        "Superset only draws those tables.\n\n"
+        "From 8 a.m. to 5 p.m., the lowest average is still **10 a.m.** "
+        f"({lowest_hour:,.0f} bikes; at 8 a.m. the average rises to {peak_hour:,.0f}). "
+        f"That is not every day: 10 a.m. is the lowest hour of the workday "
+        f"on **{n_days_10} of {n_days} days** and in **{n_weeks_10} of {n_weeks} weeks**. "
+        f"On {n_days_8} days the minimum was 8 a.m.\n\n"
+        "The lines below go into the detail: hour by hour (0 to 23, one line per weekday), "
+        "week by week, and day by day. On those last two charts, the blue line is 10 a.m."
     )
 
     order = [

@@ -25,13 +25,13 @@ STYLE = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
 TOOLTIP = (
     "<div><b>{{place}}</b></div>"
     "<div>{{google}}</div>"
-    "<div>Rayos: {{weight}}</div>"
+    "<div>Strikes: {{weight}}</div>"
 )
 POLYGON_TOOLTIP = (
     "<div><b>{{name}}, {{state}}</b></div>"
     "<div>Google Maps: <b>{{google}}</b></div>"
-    "<div>Rayos: {{strikes}}</div>"
-    "<div>Hogares por km²: {{household_density}}</div>"
+    "<div>Strikes: {{strikes}}</div>"
+    "<div>Households per km²: {{household_density}}</div>"
 )
 
 
@@ -69,8 +69,8 @@ def locate(cells, features):
     rows = []
     for (year, lon, lat), strikes in cells.items():
         bucket = index.get((int(np.floor(lon)), int(np.floor(lat))), [])
-        place = "Fuera de los condados de EE.UU."
-        state = "Fuera de EE.UU."
+        place = "Outside U.S. counties"
+        state = "Outside the U.S."
         for feature in bucket:
             minx, miny, maxx, maxy = feature["bbox"]
             if lon < minx or lon > maxx or lat < miny or lat > maxy:
@@ -123,7 +123,7 @@ def deck_heat(dataset_id, title, filters, viewport, radius):
             "viz_type": "deck_heatmap",
             "datasource": f"{dataset_id}__table",
             "spatial": {"type": "latlong", "lonCol": "longitude", "latCol": "latitude"},
-            "size": metric("strikes", "Rayos"),
+            "size": metric("strikes", "Strikes"),
             "row_limit": 200000,
             "filter_nulls": True,
             "adhoc_filters": filters,
@@ -213,8 +213,8 @@ def main():
     ensure("lightning_tract_2018")
     us_view = {"longitude": -97.2, "latitude": 38.4, "zoom": 3.65, "bearing": 0, "pitch": 0}
     views = {
-        "Rayos en 2009": ([{"clause": "WHERE", "expressionType": "SIMPLE", "subject": "year", "operator": "==", "comparator": 2009}], us_view, 8),
-        "Rayos en 2018": ([{"clause": "WHERE", "expressionType": "SIMPLE", "subject": "year", "operator": "==", "comparator": 2018}], us_view, 8),
+        "Strikes in 2009": ([{"clause": "WHERE", "expressionType": "SIMPLE", "subject": "year", "operator": "==", "comparator": 2009}], us_view, 8),
+        "Strikes in 2018": ([{"clause": "WHERE", "expressionType": "SIMPLE", "subject": "year", "operator": "==", "comparator": 2018}], us_view, 8),
         "Texas 2018": (
             [
                 {"clause": "WHERE", "expressionType": "SIMPLE", "subject": "year", "operator": "==", "comparator": 2018},
@@ -244,9 +244,13 @@ def main():
     by_name = {}
     for item in charts:
         by_name.setdefault(item["slice_name"], []).append(item)
+    previous_titles = {
+        "Strikes in 2009": "Rayos en 2009",
+        "Strikes in 2018": "Rayos en 2018",
+    }
     for title, (filters, viewport, radius) in views.items():
         spec = deck_heat(points_id, title, filters, viewport, radius)
-        matches = by_name.get(title, [])
+        matches = by_name.get(title) or by_name.get(previous_titles.get(title), [])
         target = matches[0] if matches else None
         payload = {
             "slice_name": title,
@@ -265,11 +269,12 @@ def main():
             territory.api("DELETE", f"/api/v1/chart/{extra['id']}", token=token, csrf=csrf)
 
     polygon_names = {
-        "Territorio: rayos por condado en 2018",
+        "2018 strikes by county",
+        "2018 households per km²",
         "Territorio: hogares por km² en 2018",
-        "Texas 2018 sobre el territorio",
-        "Oklahoma 2018 sobre el territorio",
-        "Kansas 2018 sobre el territorio",
+        "Texas 2018 on the territory",
+        "Oklahoma 2018 on the territory",
+        "Kansas 2018 on the territory",
     }
     for item in charts:
         if item["slice_name"] not in polygon_names:
