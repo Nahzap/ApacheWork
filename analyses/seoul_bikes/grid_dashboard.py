@@ -1,4 +1,4 @@
-"""Official board for the first exercise: Seoul bike maintenance, 2018.
+"""Official board for Seoul bike maintenance, 2018.
 
 Five charts, and only these five. Reads the tables already prepared by
 seoul_detail.py. Does not reload those tables and does not delete charts.

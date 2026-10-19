@@ -1,4 +1,4 @@
-"""Official boards for the lightning exercises.
+"""Boards for the U.S. lightning study.
 
 `render` draws the 2009-2018 study from the summaries already on disk.
 `render_tableau` draws the five charts of
@@ -22,7 +22,7 @@ from matplotlib.colors import LogNorm
 
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "outputs"
-PNG = OUT / "ejercicio_2_oficial.png"
+PNG = OUT / "ejercicio_1_oficial.png"
 
 INK = "#1c1c1c"
 MUTED = "#5e5e5e"

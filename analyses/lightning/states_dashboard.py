@@ -14,7 +14,7 @@ from matplotlib.colors import LinearSegmentedColormap
 
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "outputs"
-PNG = OUT / "ejercicio_4_oficial.png"
+PNG = OUT / "ejercicio_2_oficial.png"
 STATES = ("Texas", "Oklahoma", "Kansas")
 
 INK = "#1c1c1c"

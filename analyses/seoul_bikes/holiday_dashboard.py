@@ -1,4 +1,4 @@
-"""Official board for the third exercise.
+"""Official board for the Seoul holiday comparison.
 
 Two charts, the ones the exercise asks for. Adjacent days keeps the calendar
 order. Matching weekdays groups every Monday, then every Tuesday, through
@@ -150,7 +150,7 @@ def render(path=PNG):
     figure.subplots_adjust(left=0.07, right=0.98, top=0.90, bottom=0.16, hspace=0.55)
     path.parent.mkdir(parents=True, exist_ok=True)
     figure.savefig(path, dpi=120, facecolor=figure.get_facecolor())
-    official = path.with_name("ejercicio_3_oficial.png")
+    official = path.with_name("ejercicio_2_oficial.png")
     if official != path:
         try:
             official.write_bytes(path.read_bytes())
