@@ -1,27 +1,44 @@
 # ApacheWork
 
-Estudios reproducibles en Python. Apache Superset solo dibuja tablas que pandas y numpy ya dejaron agregadas.
+Tres ejercicios de Tableau, rehechos en Python. Al abrir el repositorio se ven los tres tableros.
 
-Dos casos, los dos salidos de un flujo de Tableau y rehechos para poder auditar la cuenta:
+## 1. Bicicletas en Seúl, 2018
 
-- [Bicicletas en Seúl, 2018](analyses/seoul_bikes/README.md). Dentro del horario laboral, las 10 a.m. son la hora con menos alquileres: 548.5 de media, y la hora más baja en 171 de 240 jornadas.
-- [Rayos en Estados Unidos, 2009-2018](analyses/lightning/README.md). El archivo pasa de 30.1 a 44.6 millones de rayos (+48%). No muestra una mudanza de la costa este al centro, ni una concentración en los condados con más hogares por km².
+En los días hábiles, entre las 8 a.m. y las 5 p.m., la hora con menos alquileres es las **10 a.m.**: 548 bicicletas de promedio, y la más baja en 171 de 240 jornadas.
+
+![Tablero oficial: horarios de mantenimiento de bicicletas en Seúl, 2018](analyses/seoul_bikes/outputs/ejercicio_1_oficial.png)
+
+Detalle del corte: [analyses/seoul_bikes/README.md](analyses/seoul_bikes/README.md).
+
+## 2. Rayos en Estados Unidos, 2009-2018
+
+El archivo pasa de **30.1 a 44.6 millones** de rayos (+48%). 2012 queda por debajo de 2009. El centro no le gana terreno a la costa en porcentaje, y el cuartil de condados con más hogares por km² se queda con el 79% de los hogares y solo el 19% de los rayos.
+
+![Tablero oficial: rayos en Estados Unidos, 2009-2018](analyses/lightning/outputs/ejercicio_2_oficial.png)
+
+Detalle de las tres frases: [analyses/lightning/README.md](analyses/lightning/README.md).
+
+## 3. Feriados en Seúl, 2017 y 2018
+
+**Impact of Holidays on Seoul Bike Rentals in 2017 and 2018.** Solo días con Functioning Day = Yes. Cada barra es el total del día. Un feriado promedia 12,700 bicicletas y un día común 17,727, un 28.4% menos. Adjacent days sigue el calendario. Matching weekdays junta cada día de la semana y lo marca con un color hasta el último día.
+
+![Tablero oficial: impacto de los feriados en los alquileres de Seúl, 2017 y 2018](analyses/seoul_bikes/outputs/ejercicio_3_oficial.png)
 
 ## Cómo está armado
 
+Python filtra y agrega. Superset solo dibuja esas tablas.
+
 ```
-analyses/seoul_bikes/     corte, promedios y publicación del tablero
-analyses/lightning/       totales, territorio, censo y mapas
+analyses/seoul_bikes/     mantenimiento, feriados y las dos imágenes oficiales
+analyses/lightning/       totales, territorio, censo, mapas y la imagen oficial
 deploy/superset.md        cómo levantar el Superset local
 ```
 
-Python hace el filtro, la agregación y las figuras de revisión. Postgres recibe el resultado por `\copy`. El gráfico de Superset lee una columna. No hay lógica de negocio en el SQL del dashboard.
-
-Los mapas de rayos comparten un solo fondo, OpenStreetMap con MapLibre. El color va encima de los nombres de ciudades y estados. El tooltip muestra latitud y después longitud.
+Los mapas de rayos usan un solo fondo, OpenStreetMap con MapLibre. El color va encima de los nombres. El tooltip muestra latitud y después longitud.
 
 ## Entorno
 
-Python 3.11. Dependencias fijadas en `requirements.txt`:
+Python 3.11. Dependencias en `requirements.txt`.
 
 ```powershell
 python -m venv .venv
@@ -29,11 +46,11 @@ python -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
-Los CSV de origen no están en el repositorio. Las rutas de esta máquina y las variables `SEOUL_CSV` y `LIGHTNING_CSV` están en el README de cada estudio. El censo y los shapefiles se descargan al correr el estudio de rayos.
+Los CSV de origen no están en el repositorio. Las rutas de esta máquina y las variables `SEOUL_CSV` y `LIGHTNING_CSV` están en el README de cada estudio.
 
 ## Superset
 
-El clon de Apache Superset y el disco de Docker quedan fuera de git. La guía de arranque y los tableros locales están en [deploy/superset.md](deploy/superset.md).
+El clon de Apache Superset y el disco de Docker quedan fuera de git. La guía de arranque está en [deploy/superset.md](deploy/superset.md).
 
 ## Qué no entra en este repositorio
 
