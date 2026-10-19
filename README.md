@@ -1,6 +1,6 @@
 # ApacheWork
 
-Tres ejercicios de Tableau, rehechos en Python. Al abrir el repositorio se ven los tres tableros.
+Cuatro ejercicios de Tableau, rehechos en Python. Al abrir el repositorio se ven los cuatro tableros.
 
 ## 1. Bicicletas en Seúl, 2018
 
@@ -23,6 +23,12 @@ Detalle de las tres frases: [analyses/lightning/README.md](analyses/lightning/RE
 **Impact of Holidays on Seoul Bike Rentals in 2017 and 2018.** Solo días con Functioning Day = Yes. Cada barra es el total del día. Un feriado promedia 12,700 bicicletas y un día común 17,727, un 28.4% menos. Adjacent days sigue el calendario. Matching weekdays junta cada día de la semana y lo marca con un color hasta el último día.
 
 ![Tablero oficial: impacto de los feriados en los alquileres de Seúl, 2017 y 2018](analyses/seoul_bikes/outputs/ejercicio_3_oficial.png)
+
+## 4. Texas, Oklahoma y Kansas, 2018
+
+Los rayos de estos tres estados caen en el territorio, no en los barrios densos. En Texas, el **42%** queda a menos de 150 km de una ciudad grande. En los tractos, el cuartil con más hogares por km² se queda con menos del **1%** de los rayos en cada estado.
+
+![Tablero oficial: Texas, Oklahoma y Kansas en 2018](analyses/lightning/outputs/ejercicio_4_oficial.png)
 
 ## Cómo está armado
 
