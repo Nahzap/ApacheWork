@@ -19,10 +19,19 @@ import seaborn as sns
 
 BASE = os.environ.get("SUPERSET_URL", "http://127.0.0.1:8088")
 ROOT = Path(__file__).resolve().parent
-CSV_SRC = Path(os.environ.get(
-    "LIGHTNING_CSV",
-    r"D:\Coursera\Course 2\tableau_main_2009_to_2018.csv",
-))
+
+
+def source_csv():
+    chosen = os.environ.get("LIGHTNING_CSV")
+    if chosen:
+        return Path(chosen)
+    local = ROOT / ".source"
+    if local.exists():
+        return Path(local.read_text(encoding="utf-8").strip())
+    raise SystemExit("Set LIGHTNING_CSV to the lightning source file.")
+
+
+CSV_SRC = source_csv()
 GEOJSON = ROOT / "data" / "us-states.json"
 OUT = ROOT / "outputs"
 FIG = ROOT / "figures"
@@ -805,22 +814,21 @@ def publish(annual, grids, states, summary):
         f"The file has **{summary['rows']:,} rows** and only four complete years, January through December: "
         "**2009, 2012, 2015, and 2018**. The other six years in the title are missing. They are not drawn as zero.\n\n"
         f"**{start:.1f} million in 2009 and {end:.1f} million in 2018** (+{change_all:.0f}%). "
-        "The video notes 30.1M and 45M, and a 50% increase. "
-        "That 50% is the rounding of these two endpoints, summing every row. "
+        "That change is the difference between these two endpoints, summing every row. "
         f"2012 was {dip['all_millions']:.1f} million, below 2009: the rise is not continuous.\n\n"
         f"Inside the continental cut (latitude 24.5 to 49.5, longitude −125 to −66.5) the change is "
         f"**{summary['start_conus']:.1f}M to {summary['end_conus']:.1f}M** (+{change_conus:.0f}%). "
         f"Outside that cut, from {summary['start_outside']:.1f}M to {summary['end_outside']:.1f}M."
     )
     page1 = (
-        "**Lightning strikes in the U.S. have increased 50% over the last decade.**\n\n"
+        "**Strikes from 2009 to 2018.**\n\n"
         f"Entire file: {start:.1f}M → {end:.1f}M (+{change_all:.0f}%). "
         f"Continental U.S.: {summary['start_conus']:.1f}M → {summary['end_conus']:.1f}M (+{change_conus:.0f}%). "
         "2010, 2011, 2013, 2014, 2016, and 2017 are missing."
     )
     page2 = (
-        "**Lightning strikes have moved from the East Coast to the Central Mainlands over the last decade.**\n\n"
-        "They did not move. Inside the continent, the East Coast (longitude ≥ −83) went from "
+        "**East Coast and the center, 2009 to 2018.**\n\n"
+        "Inside the continent, the East Coast (longitude ≥ −83) went from "
         f"{summary['east_2009'] * 100:.0f}% to {summary['east_2018'] * 100:.0f}% "
         f"and the center (−103 to −90) from {summary['central_2009'] * 100:.0f}% to {summary['central_2018'] * 100:.0f}%. "
         f"In millions, the East Coast rose from {summary['east_m_2009']:.1f} to {summary['east_m_2018']:.1f} "
@@ -836,8 +844,8 @@ def publish(annual, grids, states, summary):
         f"{first_row['atlantic_millions']:.1f}M and {first_row['pacific_millions']:.1f}M)."
     )
     page3 = (
-        "**Most number of lightning strikes in 2018 happened in densely populated household areas.**\n\n"
-        "The file has no households or population, so that sentence cannot be checked from it alone. "
+        "**Household density and strikes in 2018.**\n\n"
+        "The file has no households or population, so density comes from the census. "
         f"As an external reference, the 2018 share of strikes within 80 km of a large city is {near_80}. "
         f"Within 150 km: {near_150}. In Texas most strikes are farther than 150 km. "
         "Color runs from gold to red with the strikes in each 0.2° cell. "

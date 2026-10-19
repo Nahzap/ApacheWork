@@ -25,10 +25,19 @@ import shapefile
 
 BASE = os.environ.get("SUPERSET_URL", "http://127.0.0.1:8088")
 ROOT = Path(__file__).resolve().parent
-CSV_SRC = Path(os.environ.get(
-    "LIGHTNING_CSV",
-    r"D:\Coursera\Course 2\tableau_main_2009_to_2018.csv",
-))
+
+
+def source_csv():
+    chosen = os.environ.get("LIGHTNING_CSV")
+    if chosen:
+        return Path(chosen)
+    local = ROOT / ".source"
+    if local.exists():
+        return Path(local.read_text(encoding="utf-8").strip())
+    raise SystemExit("Set LIGHTNING_CSV to the lightning source file.")
+
+
+CSV_SRC = source_csv()
 OUT = ROOT / "outputs"
 FIG = ROOT / "figures"
 CENSUS = OUT / "census"
@@ -798,7 +807,6 @@ def publish(counties, tracts, quartile, summaries):
             for label in [{"Texas tracts": "Texas", "Oklahoma tracts": "Oklahoma", "Kansas tracts": "Kansas"}.get(item["scope"], "")]
             if label
         )
-        + " The video sentence is read against these percentages."
     )
     dashboard = api("GET", f"/api/v1/dashboard/{dashboard_id}", token=token)["result"]
     layout = json.loads(dashboard["position_json"])

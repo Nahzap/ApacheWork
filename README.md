@@ -22,11 +22,11 @@ On weekdays, between 8 a.m. and 5 p.m., the hour with the fewest rentals is **10
 
 The notes are in [analyses/lightning/README.md](analyses/lightning/README.md).
 
-### 1. Lightning strikes: Tableau exercises
+### 1. United States, 2018
 
 The whole United States in 2018. Color is the sum of strikes in each cell. Beside it, the same map colored by count: blue for 1 to 2 strikes, red for 40 to 108. Below, strikes by month and year, daily strikes by quarter, and the histogram of strikes from 1 to 200.
 
-![Lightning strikes: Tableau exercises](analyses/lightning/outputs/lightning_tableau.png)
+![Lightning strikes in the United States, 2018](analyses/lightning/outputs/lightning_2018.png)
 
 ### 2. Lightning history: United States, 2009-2018
 
@@ -68,7 +68,7 @@ python -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
-The source CSVs are not in this repository. Each study's README gives the path on this machine.
+The source CSVs are not in this repository. The Seoul notes give that file's path. The lightning file is selected with `LIGHTNING_CSV`.
 
 ## Superset
 

@@ -198,7 +198,7 @@ def retile_dashboard(layout, chart_id, chart_uuid):
     for key, node in layout.items():
         if isinstance(node, dict) and node.get("type") == "MARKDOWN":
             code = node.get("meta", {}).get("code", "")
-            old = "The file has no households or population, so that sentence cannot be checked from it alone."
+            old = "The file has no households or population, so density comes from the census."
             if old in code:
                 node["meta"]["code"] = code.replace(
                     old,

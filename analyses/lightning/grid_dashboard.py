@@ -1,8 +1,8 @@
 """Boards for the U.S. lightning study.
 
 `render` draws the 2009-2018 study from the summaries already on disk.
-`render_tableau` draws the five charts of
-"Lightning strikes: Tableau exercises". `render_historia` draws the
+`render_strikes_2018` draws the five charts of the 2018 United States
+board. `render_historia` draws the
 charts of "Lightning history: United States, 2009-2018", including the
 county maps and Texas, Oklahoma and Kansas. None of these paths reread
 the 12 million-row file or rewrite a Superset dashboard.
@@ -193,8 +193,8 @@ def render(path=PNG):
     return path
 
 
-TABLEAU_PNG = OUT / "lightning_tableau.png"
-TABLEAU_TITLE = "Lightning strikes: Tableau exercises"
+STRIKES_PNG = OUT / "lightning_2018.png"
+STRIKES_TITLE = "Lightning strikes in the United States, 2018"
 MARK_BREAKS = (
     (40, 108, "#B71C1C"),
     (32, 39, "#E53935"),
@@ -344,7 +344,7 @@ def draw_bins(ax, bins):
     panel_title(ax, "Histogram")
 
 
-def render_tableau(path=TABLEAU_PNG):
+def render_strikes_2018(path=STRIKES_PNG):
     points = copy_sql("SELECT longitude, latitude, strikes FROM public.lightning_map_points WHERE year = 2018")
     cloud = copy_sql("SELECT longitude, latitude, marks FROM public.lightning_2018_cloud")
     heat = copy_sql("SELECT year, month_num, number_of_strikes FROM public.lightning_month_heatmap")
@@ -359,7 +359,7 @@ def render_tableau(path=TABLEAU_PNG):
     draw_month_heat(figure.add_subplot(grid[1, :]), heat)
     draw_box(figure.add_subplot(grid[2, 0]), daily)
     draw_bins(figure.add_subplot(grid[2, 1]), bins)
-    figure.suptitle(TABLEAU_TITLE, fontsize=18, color=INK, x=0.055, ha="left", fontweight="medium")
+    figure.suptitle(STRIKES_TITLE, fontsize=18, color=INK, x=0.055, ha="left", fontweight="medium")
     figure.text(
         0.055,
         0.935,
@@ -558,8 +558,8 @@ def render_historia(path=HISTORIA_PNG):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1 and sys.argv[1] == "tableau":
-        render_tableau()
+    if len(sys.argv) > 1 and sys.argv[1] == "2018":
+        render_strikes_2018()
     elif len(sys.argv) > 1 and sys.argv[1] == "historia":
         render_historia()
     else:

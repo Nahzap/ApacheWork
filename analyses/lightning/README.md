@@ -2,19 +2,19 @@
 
 The file has 12,875,911 rows: `date`, `number_of_strikes`, `x_coord` (longitude), and `y_coord` (latitude). The native grid is 0.1°. Only four years are complete, January through December: 2009, 2012, 2015, and 2018. The other years in the title are absent and are not drawn as zero.
 
-The source CSV is not redistributed. On this machine it is `D:\Coursera\Course 2\tableau_main_2009_to_2018.csv`. Another path is set with `LIGHTNING_CSV`.
+The source CSV is not in this repository. Point `LIGHTNING_CSV` at it before running the publish scripts.
 
-## Three sentences from the video, measured
+## Measured change, 2009 to 2018
 
-**“Lightning strikes in the U.S. have increased 50% over the last decade.”**
+**Strikes from 2009 to 2018.**
 
-Across the whole file, 2009 sums to 30.1 million and 2018 sums to 44.6 million: +48%. The video notes 30.1M and 45M, and rounds the increase to 50%. In the continental cut (latitude 24.5 to 49.5, longitude −125 to −66.5) the change is from 29.2M to 39.4M, +35%. 2012 is 28.8M, below 2009. It is not a rise every year.
+Across the whole file, 2009 sums to 30.1 million and 2018 sums to 44.6 million: +48%. In the continental cut (latitude 24.5 to 49.5, longitude −125 to −66.5) the change is from 29.2M to 39.4M, +35%. 2012 is 28.8M, below 2009. It is not a rise every year.
 
-**“Lightning strikes have moved from the East Coast to the Central Mainlands over the last decade.”**
+**East Coast and the center.**
 
 Inside the continent, the East Coast (longitude ≥ −83) goes from 23.3% to 21.3% and the center (−103 to −90) stays at 42.3%. In millions, the East Coast rises from 6.8 to 8.4 and the center from 12.3 to 16.7. The center of mass moves about 62 km west, from (−91.76, 34.78) to (−92.43, 34.68). Both regions gain strikes. The place change that does show up in the file is outside the cut: south of 24.5° goes from 0.6M to 4.4M.
 
-**“Most number of lightning strikes in 2018 happened in densely populated household areas.”**
+**Household density and the 2018 strikes.**
 
 The lightning file has no households. It was joined to the 2018 5-year American Community Survey (tables B11001, households, and B01003, population) and the 2018 TIGER boundaries. In the counties, the quartile with the most households per km² holds 79% of households, 13% of the land, and 19% of the strikes that fall inside a county. The rank correlation between households per km² and strikes per km² is −0.01.
 
