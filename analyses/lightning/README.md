@@ -41,6 +41,14 @@ python analyses/lightning/lightning_labels.py
 
 `lightning_story.py` reescribe los gráficos anuales. `lightning_territory.py` baja el ACS y los shapefiles a `outputs/census/` (eso no se versiona) y arma condados y tractos. `lightning_basemap.py` asigna cada celda de 0.1° a un condado. `lightning_labels.py` suma 2009 por condado, pasa todos los mapas al mismo fondo y quita del tablero las cuadrículas que tapaban los nombres.
 
+## Location Metrics
+
+El segundo tablero, `Location Metrics`, sale de `location_metrics.py`. El mapa usa los condados del territorio, el mismo fondo con los nombres debajo del color. Cada condado lleva la cantidad de rayos de sus celdas. Es una sola consulta, y mover el mapa no la repite. **Interactive Filter** elige el año y mueve las tres cifras de **Metrics for the Year**: total, promedio y máximo. Un clic en un lugar mueve solo **Location Metrics**. Otro clic vuelve a mostrar todos los lugares. El fondo y el orden latitud, longitud son los mismos que en el tablero anterior.
+
+```powershell
+python analyses/lightning/location_metrics.py
+```
+
 ## Qué queda en el repositorio
 
 | Ruta | Contenido |

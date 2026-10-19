@@ -26,6 +26,8 @@ analyses/lightning/outputs/lightning_state_grid_2018.csv
 analyses/lightning/outputs/points_2009.csv
 analyses/lightning/outputs/county_names.csv
 analyses/lightning/outputs/county_strikes_2009.csv
+analyses/lightning/outputs/lightning_location_metrics.csv
+analyses/lightning/outputs/lightning_location_points.csv
 
 .vscode/
 *.vhdx

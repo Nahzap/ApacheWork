@@ -28,3 +28,11 @@ python analyses/seoul_bikes/seoul_detail.py
 ```
 
 Las tablas pequeñas que el script carga quedan en `outputs/`.
+
+## Feriados, 2017 y 2018
+
+`seoul_holidays.py` arma otro tablero, sin tocar el de mantenimiento. Compara el total de cada feriado con los días comunes vecinos y con el mismo día de la semana. Solo usa días con Functioning Day = Yes.
+
+```powershell
+python analyses/seoul_bikes/seoul_holidays.py
+```
